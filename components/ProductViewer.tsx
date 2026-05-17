@@ -486,7 +486,13 @@ function Lights() {
        *  touch of local warmth so it doesn't read as grey plastic. */}
       <pointLight
         position={[2.4, 2.5, 3]}
-        intensity={1.6 * k}
+        {/* PASS 4c (root cause). This warm point sits front-right, right
+         *  where the gauge cluster is — at 1.6 it was the orange-white
+         *  CORE of the gauge blowout (3 material passes couldn't beat a
+         *  direct light this strong). 1.6→0.7: still gives the bezel/
+         *  collar a touch of copper warmth (its only job), no longer
+         *  blows the convex gauge at glancing angles. */}
+        intensity={0.7 * k}
         distance={8}
         decay={2}
         color="#d9bd9c"
@@ -502,7 +508,15 @@ function Lights() {
         position={[0, 8, 1]}
         angle={0.6}
         penumbra={0.95}
-        intensity={12 * k}
+        {/* PASS 4c (root cause, ONE move fixes TWO reported issues). At
+         *  12 (×1.4 on BLACK ≈ 17) this overhead spot both (a) blew the
+         *  gauge dome white and (b) made the over-bright floor pool under
+         *  the cups ("ripiano troppo luminoso"). 12→6.5: still lays the
+         *  top-edge highlight band and a calm floor presence, no longer
+         *  clips. Aligned with the LOCKED brief ("no shouting, lusso
+         *  quieto" — a 17-intensity spot was the opposite). DO NOT raise
+         *  back: KEY (0.72) + FILL (0.45) + hemi (0.5) carry the form. */}
+        intensity={6.5 * k}
         distance={20}
         decay={2}
         color="#f4e4ca"
