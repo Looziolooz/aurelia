@@ -677,11 +677,11 @@ export function buildEspressoMachine(): THREE.Group {
     body: new THREE.MeshStandardMaterial({
       map: setBody.color,
       normalMap: setBody.normal,
-      normalScale: new THREE.Vector2(0.6, 0.6),
+      normalScale: new THREE.Vector2(0.45, 0.45), // anti-fry: 0.6→0.45
       roughnessMap: setBody.roughness,
       metalness: 0.85,
       roughness: 1.0,
-      envMapIntensity: 0.9,
+      envMapIntensity: 0.7,
     }),
     bodyDark: new THREE.MeshStandardMaterial({
       color: 0x070708,
@@ -692,46 +692,49 @@ export function buildEspressoMachine(): THREE.Group {
     copperMatte: new THREE.MeshStandardMaterial({
       map: setCopper.color,
       normalMap: setCopper.normal,
-      normalScale: new THREE.Vector2(0.5, 0.5), // was 0.7 — less metal shimmer
+      normalScale: new THREE.Vector2(0.32, 0.32), // anti-fry: 0.7→0.5→0.32
       roughnessMap: setCopper.roughness,
       metalness: 1.0,
       roughness: 1.0,
-      envMapIntensity: 1.15,
+      // envMapIntensity ~0.7 across all metals: with the env now blurred
+      // (ProductViewer), the reflected sheen is soft; lowering how MUCH
+      // of it shows kills the orbiting "riflessi/luccichio" crawl while
+      // staying matte-coherent with the Cycles hero. Zero GPU cost.
+      envMapIntensity: 0.72,
     }),
     copperBright: new THREE.MeshStandardMaterial({
       color: 0xc78250,
       metalness: 1.0,
-      roughness: 0.22, // was 0.16 — same anti-aliasing reason as chrome
-      envMapIntensity: 1.3,
+      roughness: 0.3, // anti-fry: 0.16→0.22→0.30
+      envMapIntensity: 0.7,
     }),
     copperEdge: new THREE.MeshStandardMaterial({
       color: 0xa0623a,
       metalness: 1.0,
-      roughness: 0.25,
-      envMapIntensity: 1.2,
+      roughness: 0.33, // anti-fry: 0.25→0.33 (thin trim edges crawl)
+      envMapIntensity: 0.65,
     }),
     chrome: new THREE.MeshStandardMaterial({
       color: 0xeeeef0,
       metalness: 1.0,
-      // 0.05 was a near-mirror: sub-pixel env speculars crawl/"fry" as the
-      // model auto-rotates (only SMAA/MSAA edge-AA, no shading/temporal AA
-      // by GPU budget). 0.13 spreads the specular lobe over >1px → no boil,
-      // and matches the Cycles hero (chrome was a 0.05→0.12 rough ramp,
-      // never flat 0.05). GPU cost unchanged.
-      roughness: 0.13,
-      envMapIntensity: 1.4,
+      // Anti-fry pass: 0.13→0.19 + envMapIntensity 1.4→1.05. The big new
+      // monoblock spout/wings made chrome the #2 boiler under auto-rotate
+      // (only SMAA, no temporal AA, weak iGPU). Wider lobe + dimmer env =
+      // no sub-pixel crawl. GPU cost unchanged.
+      roughness: 0.19,
+      envMapIntensity: 0.7,
     }),
     chromeBrushed: new THREE.MeshStandardMaterial({
       color: 0xc8c8cc,
       metalness: 1.0,
       roughness: 0.28,
-      envMapIntensity: 1.1,
+      envMapIntensity: 0.7,
     }),
     steel: new THREE.MeshStandardMaterial({
       color: 0xb8b8bc,
       metalness: 1.0,
-      roughness: 0.22,
-      envMapIntensity: 1.1,
+      roughness: 0.3, // anti-fry: 0.22→0.30 (small metal lugs sparkle)
+      envMapIntensity: 0.65,
     }),
     walnut: new THREE.MeshStandardMaterial({
       map: setWalnut.color,
@@ -780,27 +783,27 @@ export function buildEspressoMachine(): THREE.Group {
     }),
     meshTop: new THREE.MeshStandardMaterial({
       map: T.meshTop,
-      metalness: 0.8,
-      roughness: 0.4,
-      envMapIntensity: 1.0,
+      metalness: 0.65, // anti-fry: patterned metal grille → moiré
+      roughness: 0.55,
+      envMapIntensity: 0.8,
     }),
     meshSmall: new THREE.MeshStandardMaterial({
       map: T.meshSmall,
-      metalness: 0.8,
-      roughness: 0.4,
-      envMapIntensity: 1.0,
+      metalness: 0.65, // anti-fry: patterned metal grille → moiré
+      roughness: 0.55,
+      envMapIntensity: 0.8,
     }),
     grate: new THREE.MeshStandardMaterial({
       map: T.grate,
-      metalness: 0.85,
-      roughness: 0.32,
-      envMapIntensity: 1.0,
+      metalness: 0.65, // anti-fry: chevron grille was a strong moiré source
+      roughness: 0.55,
+      envMapIntensity: 0.8,
     }),
     basket: new THREE.MeshStandardMaterial({
       map: T.basket,
-      metalness: 0.85,
-      roughness: 0.3,
-      envMapIntensity: 1.0,
+      metalness: 0.65, // anti-fry: fine mesh weave + metal → moiré
+      roughness: 0.55,
+      envMapIntensity: 0.8,
     }),
     switchRed: new THREE.MeshStandardMaterial({
       color: 0x8a1a10,
@@ -1419,16 +1422,19 @@ let _glossyBody: THREE.MeshPhysicalMaterial | null = null;
 
 function glossyBody(): THREE.MeshPhysicalMaterial {
   if (_glossyBody) return _glossyBody;
-  // Pastello/Classica enamel: dielectric, near-zero roughness + full
-  // clearcoat = the "smaltato / porcellanato" sheet-metal look. No map →
-  // clean enamel. Created once, on first paint.
+  // Pastello/Classica enamel: dielectric + clearcoat = the "smaltato /
+  // porcellanato" sheet-metal look. ANTI-FRY (#1 offender — biggest
+  // moving glossy surface): clearcoatRoughness 0.03→0.13 + roughness
+  // 0.045→0.11 + envMapIntensity 1.0→0.85. The razor clearcoat lobe was
+  // crawling sub-pixel under auto-rotation with only SMAA on the weak
+  // iGPU; a wider lobe + dimmer env kills the boil, still reads enamel.
   _glossyBody = new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
     metalness: 0.0,
-    roughness: 0.045,
+    roughness: 0.11,
     clearcoat: 1.0,
-    clearcoatRoughness: 0.03,
-    envMapIntensity: 1.0,
+    clearcoatRoughness: 0.13,
+    envMapIntensity: 0.85,
   });
   return _glossyBody;
 }

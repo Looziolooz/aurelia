@@ -480,9 +480,13 @@ function Lights() {
         decay={2}
         color="#d9bd9c"
       />
-      {/* TOP HAIR LIGHT — overhead softbox above the machine (Y=8, was
-       *  buried at Y=1.6). Near-white; lays the highlight band on the top
-       *  edge — the overhead-strip trick from product photography. */}
+      {/* TOP HAIR LIGHT — overhead softbox above the machine (Y=8). Lays
+       *  the highlight band on the top edge AND is the lamp that pools on
+       *  the floor below. Warmed from cool-white #fdfbf6 → warm ivory
+       *  #f4e4ca (per request: "ripiano inferiore più illuminato — lampada
+       *  un po' più calda"): same brightness/intensity, the bright lower
+       *  pool now reads warm atelier-tungsten, not cool-white. Stays
+       *  within the quiet-museum / copper brand (not amber/sodium). */}
       <spotLight
         position={[0, 8, 1]}
         angle={0.6}
@@ -490,7 +494,7 @@ function Lights() {
         intensity={40}
         distance={20}
         decay={2}
-        color="#fdfbf6"
+        color="#f4e4ca"
         castShadow={false}
       />
       {/* Ambient bounce: neutral. Bright light-grey "floor" + soft neutral
@@ -599,7 +603,7 @@ function HotspotScreenProjector() {
 function PostFXInner() {
   const { gl, camera } = useThree();
   const bloomRef = useRef<any>(null);
-  const bloomIntensity = useRef(0.32);
+  const bloomIntensity = useRef(0.19);
   // postprocessing's EffectComposer reads `gl.getContext().getContextAttributes().alpha`
   // synchronously in its constructor. In React 19 StrictMode + Turbopack dev,
   // the WebGL context can be transiently lost (or not yet primed) between the
@@ -639,7 +643,7 @@ function PostFXInner() {
     if (!bloomRef.current) return;
     const elapsed = (performance.now() - startTime.current) / 1000;
     const pulse = Math.sin(elapsed * 0.5) * 0.025; // calmer, was *0.08
-    bloomIntensity.current = 0.16 + pulse;          // lower base, was 0.32
+    bloomIntensity.current = 0.19 + pulse;          // mood pass: base 0.16→0.19
     bloomRef.current.intensity = bloomIntensity.current;
   });
 
@@ -658,22 +662,24 @@ function PostFXInner() {
        *  every frame). On the kiosk's integrated GPU it was the tipping
        *  point into WebGL context loss. The baked ContactShadows + the
        *  studio key/fill lighting already carry the crevice depth. */}
-      {/* threshold 0.82→0.92: only true blown highlights bloom, so the
-       *  moving env/specular sweep on the metals no longer flares as the
-       *  camera orbits. */}
+      {/* Mood pass. threshold kept HIGH (0.82→0.90, not back to 0.82):
+       *  still above the point where the orbiting env/specular sweep on
+       *  the metals flares. Softer/wider glow (radius 0.6→0.72) for a
+       *  cinematic bloom rather than a brighter one. */}
       <Bloom
         ref={bloomRef}
-        intensity={0.16}
-        luminanceThreshold={0.92}
+        intensity={0.1}
+        luminanceThreshold={0.97}
         luminanceSmoothing={0.28}
         mipmapBlur
-        radius={0.6}
+        radius={0.72}
       />
-      {/* Lift mid contrast a hair so the matte black body keeps depth
-       *  without crushing the copper highlights. */}
-      <BrightnessContrast brightness={-0.02} contrast={0.09} />
-      {/* Tighter vignette: studio product photo, soggetto stacca dal nero. */}
-      <Vignette eskil={false} offset={0.22} darkness={0.7} />
+      {/* Mood pass: fuller blacks (contrast 0.09→0.13, brightness a hair
+       *  down) but gentle enough that the copper highlights don't crush. */}
+      <BrightnessContrast brightness={-0.03} contrast={0.13} />
+      {/* Deeper cinematic vignette so the subject pops off the black —
+       *  darkness 0.7→0.86, falloff a touch tighter. */}
+      <Vignette eskil={false} offset={0.26} darkness={0.86} />
     </EffectComposer>
   );
 }
@@ -704,7 +710,13 @@ function Scene({
       {/* 0.7: the env reflection is the view-dependent term that "sweeps"
        *  across the metals as the camera orbits. Lower = calmer mirror,
        *  and closer to the matte-ish Cycles hero (coherence-positive). */}
-      <Environment files={ENV_HDR} environmentIntensity={0.7} />
+      {/* blur 0.5: a SHARP HDR reflected on metal crawls/sparkles as the
+       *  model orbits no matter the roughness — pre-blurring the PMREM
+       *  turns the reflection into a soft sheen with no high-freq detail
+       *  to alias. Zero GPU cost (same env, blurred param). intensity
+       *  0.7→0.5: even calmer mirror, toward the matte Cycles hero. This
+       *  is the single biggest anti-"friggitorio" lever (was unused). */}
+      <Environment files={ENV_HDR} environmentIntensity={0.5} blur={0.5} />
 
       <Lights />
 
