@@ -29,7 +29,7 @@ export interface SmegColor {
 export const SMEG_COLORS: readonly SmegColor[] = [
   { id: "nero", labelKey: "nero", hex: "#101011", ref: "RAL 9005" },
   { id: "verde", labelKey: "verde", hex: "#5E8A6E", ref: "RAL 6019 (darkened) / Pantone 573 C" },
-  { id: "azzurro", labelKey: "azzurro", hex: "#A9C9D7", ref: "RAL 5024 / Pantone 2915 C" },
+  { id: "azzurro", labelKey: "azzurro", hex: "#7E9EAC", ref: "RAL 5024 (darkened) / Pantone 2915 C" },
   { id: "rosso", labelKey: "rosso", hex: "#C1271B", ref: "RAL 3000 / Pantone 186 C" },
 ] as const;
 
