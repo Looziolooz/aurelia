@@ -773,25 +773,31 @@ export function buildEspressoMachine(): THREE.Group {
     gaugeGlass: new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
       metalness: 0.0,
-      roughness: 0.0,
+      // roughness 0.0 + envMap 1.2 = a perfect convex mirror → the white
+      // starburst flare on the gauge. A hair of roughness + low env keeps
+      // it readable glass without the blown sunburst.
+      roughness: 0.06,
       transmission: 0.95,
       thickness: 0.08,
       transparent: true,
       opacity: 0.5,
-      envMapIntensity: 1.2,
+      envMapIntensity: 0.5,
       ior: 1.5,
     }),
+    // Cup-warmer mesh blew to a solid white slab under the overhead spot.
+    // Satin steel (lower metal, rougher, low env) — passive warmer, not a
+    // mirror; the blown rectangle is gone.
     meshTop: new THREE.MeshStandardMaterial({
       map: T.meshTop,
-      metalness: 0.65, // anti-fry: patterned metal grille → moiré
-      roughness: 0.55,
-      envMapIntensity: 0.8,
+      metalness: 0.45,
+      roughness: 0.7,
+      envMapIntensity: 0.4,
     }),
     meshSmall: new THREE.MeshStandardMaterial({
       map: T.meshSmall,
-      metalness: 0.65, // anti-fry: patterned metal grille → moiré
-      roughness: 0.55,
-      envMapIntensity: 0.8,
+      metalness: 0.45,
+      roughness: 0.7,
+      envMapIntensity: 0.4,
     }),
     grate: new THREE.MeshStandardMaterial({
       map: T.grate,
@@ -1443,13 +1449,16 @@ function glossyBody(): THREE.MeshPhysicalMaterial {
   // 0.045→0.11 + envMapIntensity 1.0→0.85. The razor clearcoat lobe was
   // crawling sub-pixel under auto-rotation with only SMAA on the weak
   // iGPU; a wider lobe + dimmer env kills the boil, still reads enamel.
+  // Glossy variants (Smeg red etc.) were blowing big white mirror bands
+  // on the flat enamel panels (clearcoat 1.0 razor lobe). Softened to a
+  // satin enamel: still glossy/smaltato, no clipped specular sheets.
   _glossyBody = new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
     metalness: 0.0,
-    roughness: 0.11,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.13,
-    envMapIntensity: 0.85,
+    roughness: 0.18,
+    clearcoat: 0.7,
+    clearcoatRoughness: 0.28,
+    envMapIntensity: 0.55,
   });
   return _glossyBody;
 }

@@ -456,7 +456,7 @@ function Lights() {
        *  (two visible faces separate) without tinting the anthracite. */}
       <directionalLight
         position={[6, 7, 5.5]}
-        intensity={0.95 * k}
+        intensity={0.72 * k}
         color="#fdf6ec"
         castShadow={false}
       />
@@ -497,7 +497,7 @@ function Lights() {
         position={[0, 8, 1]}
         angle={0.6}
         penumbra={0.95}
-        intensity={24 * k}
+        intensity={12 * k}
         distance={20}
         decay={2}
         color="#f4e4ca"
@@ -775,7 +775,7 @@ function Scene({
        *  and saves a full 512² depth render every frame. */}
       <ContactShadows
         position={[0, 0.01, 0]}
-        opacity={0.55}
+        opacity={0.8}
         scale={9}
         blur={2.4}
         far={6}
@@ -857,7 +857,7 @@ function ProductCanvas() {
             // speculars — AgX rolls highlights off gracefully so speculars
             // stay controlled. Also lifts the live mid-key toward the
             // (well-exposed) Filmic Cycles hero.
-            toneMappingExposure: 1.2,
+            toneMappingExposure: 1.0,
             outputColorSpace: THREE.SRGBColorSpace,
             stencil: false,
             depth: true,
