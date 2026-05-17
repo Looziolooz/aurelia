@@ -730,6 +730,20 @@ export function buildEspressoMachine(): THREE.Group {
       roughness: 0.28,
       envMapIntensity: 0.7,
     }),
+    // PASS 4b (live BLACK, gauge close-up): after the dome was fixed the
+    // brushed-chrome BEZEL (case + 60 knurl facets + inner ring) still
+    // caught a hard white specular halo that "shouts" against the black
+    // body. A dedicated material so the shared `chromeBrushed` (drip-tray
+    // grate, cylinders) is NOT touched: darker, much rougher, low env →
+    // the bezel reads as matte brushed steel, no white ring. Physically a
+    // pressure-gauge bezel IS bead-blasted steel, not chrome.
+    gaugeBezel: new THREE.MeshStandardMaterial({
+      color: 0xa6a6aa,
+      metalness: 1.0,
+      roughness: 0.52,
+      envMapIntensity: 0.22,
+      dithering: true,
+    }),
     steel: new THREE.MeshStandardMaterial({
       color: 0xb8b8bc,
       metalness: 1.0,
@@ -910,7 +924,7 @@ export function buildEspressoMachine(): THREE.Group {
   // trim). Copper elsewhere (group head, body edges) is intentionally
   // left untouched.
   const gauge = new THREE.Group();
-  const gCase = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.2, 64), M.chromeBrushed);
+  const gCase = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.2, 64), M.gaugeBezel);
   gCase.rotation.x = Math.PI / 2;
   gCase.position.z = -0.08;
   gauge.add(gCase);
@@ -919,12 +933,12 @@ export function buildEspressoMachine(): THREE.Group {
     // chromeBrushed (satin) not chrome (mirror): 60 mirror facets in a
     // ring blew a white sparkle halo under the key/spot. A real knurled
     // pressure-gauge bezel is brushed steel anyway — physically correct.
-    const k = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.045, 0.06), M.chromeBrushed);
+    const k = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.045, 0.06), M.gaugeBezel);
     k.position.set(Math.cos(a) * 0.36, Math.sin(a) * 0.36, 0);
     k.rotation.z = a + Math.PI / 2;
     gauge.add(k);
   }
-  const gRingIn = new THREE.Mesh(new THREE.TorusGeometry(0.295, 0.018, 8, 48), M.chromeBrushed);
+  const gRingIn = new THREE.Mesh(new THREE.TorusGeometry(0.295, 0.018, 8, 48), M.gaugeBezel);
   gauge.add(gRingIn);
   const gFace = new THREE.Mesh(new THREE.CircleGeometry(0.28, 64), M.gauge);
   gFace.position.z = 0.022;
