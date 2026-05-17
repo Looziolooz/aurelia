@@ -1452,13 +1452,20 @@ function glossyBody(): THREE.MeshPhysicalMaterial {
   // Glossy variants (Smeg red etc.) were blowing big white mirror bands
   // on the flat enamel panels (clearcoat 1.0 razor lobe). Softened to a
   // satin enamel: still glossy/smaltato, no clipped specular sheets.
+  // PASS 3 (live NERO build, "ancora troppi riflessi e rumore"): on a
+  // near-black body the env reflection is the *only* lit signal, so a
+  // bright clearcoat lobe + env reads as a hard mirror band and the
+  // smooth dark falloff shows 8-bit banding ("rumore"). clearcoat
+  // 0.7→0.5 + envMapIntensity 0.55→0.4 shrinks the mirror; `dithering`
+  // breaks up the dark-gradient banding at zero GPU cost.
   _glossyBody = new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
     metalness: 0.0,
     roughness: 0.18,
-    clearcoat: 0.7,
+    clearcoat: 0.5,
     clearcoatRoughness: 0.28,
-    envMapIntensity: 0.55,
+    envMapIntensity: 0.4,
+    dithering: true,
   });
   return _glossyBody;
 }

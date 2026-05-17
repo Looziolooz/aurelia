@@ -469,10 +469,15 @@ function Lights() {
         castShadow={false}
       />
       {/* RIM / kicker — behind-above, opposite the key. Neutral-cool
-       *  silhouette edge: steam wand, gauge bezel, cup-warmer top. */}
+       *  silhouette edge: steam wand, gauge bezel, cup-warmer top.
+       *  PASS 3: on the NERO glossy body this cool kicker was painting a
+       *  bright Fresnel rim on EVERY panel edge, which Bloom then bled
+       *  into the white silhouette-outline the user flagged. Cut
+       *  0.85→0.32: still separates the wand/bezel from the backdrop,
+       *  no longer outlines the whole machine. */}
       <directionalLight
         position={[-3.5, 6.5, -6]}
-        intensity={0.85 * k}
+        intensity={0.32 * k}
         color="#eef3fb"
         castShadow={false}
       />
@@ -668,14 +673,16 @@ function PostFXInner() {
        *  every frame). On the kiosk's integrated GPU it was the tipping
        *  point into WebGL context loss. The baked ContactShadows + the
        *  studio key/fill lighting already carry the crevice depth. */}
-      {/* Mood pass. threshold kept HIGH (0.82→0.90, not back to 0.82):
-       *  still above the point where the orbiting env/specular sweep on
-       *  the metals flares. Softer/wider glow (radius 0.6→0.72) for a
-       *  cinematic bloom rather than a brighter one. */}
+      {/* Mood pass. PASS 3: even at 0.1 the bloom was grabbing the cool
+       *  Fresnel rim and the gauge-glass hotspot and bleeding them into
+       *  the white silhouette-outline + the mipmapBlur dark-noise the
+       *  user flagged. intensity 0.1→0.035 + threshold 0.97→0.99 keeps a
+       *  faint cinematic halo on true speculars only (gauge glint, copper
+       *  catch) and stops the whole-machine edge bleed. */}
       <Bloom
         ref={bloomRef}
-        intensity={0.1}
-        luminanceThreshold={0.97}
+        intensity={0.035}
+        luminanceThreshold={0.99}
         luminanceSmoothing={0.28}
         mipmapBlur
         radius={0.72}
