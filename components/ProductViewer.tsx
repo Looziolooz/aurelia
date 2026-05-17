@@ -947,6 +947,9 @@ function ProductCanvas() {
             onModelReady={() => {
               setEffectsReady(true);
               setModelReady(true);
+              // Mirror into the store so IntroOverlay can hold its
+              // render backdrop until the heavy model is actually here.
+              useTotemStore.getState().setModelReady(true);
             }}
           />
           {effectsReady && <PostFX />}

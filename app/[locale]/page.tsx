@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { LanguagePicker } from "@/components/LanguagePicker";
 import { ColorVariantSwitcher } from "@/components/ColorVariantSwitcher";
 import { AttractorOverlay } from "@/components/AttractorOverlay";
+import { IntroOverlay } from "@/components/IntroOverlay";
 import { HotspotPanel } from "@/components/HotspotPanel";
 import { HotspotSidebar } from "@/components/HotspotSidebar";
 import { HotspotCalibrator } from "@/components/HotspotCalibrator";
@@ -35,6 +36,10 @@ export default async function LocaleHome() {
       <LanguagePicker />
       <ColorVariantSwitcher />
       <AttractorOverlay />
+      {/* IntroOverlay mounts AFTER AttractorOverlay so it stacks above it
+       *  (z 75 also enforces this). It owns first-load onboarding;
+       *  AttractorOverlay stays mounted underneath unchanged. */}
+      <IntroOverlay />
       <HotspotSidebar />
       <HotspotPanel />
       <InquiryCta />

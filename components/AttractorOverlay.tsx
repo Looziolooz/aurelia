@@ -12,6 +12,7 @@ export function AttractorOverlay() {
   const t = useTranslations();
   const phase = useTotemStore((s) => s.phase);
   const enterActive = useTotemStore((s) => s.enterActive);
+  const introDone = useTotemStore((s) => s.introDone);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneARef = useRef<HTMLDivElement>(null);
@@ -108,8 +109,14 @@ export function AttractorOverlay() {
   // at a higher z-index than the attractor and their clicks were stopping
   // at the picker root — without this listener the model stays hidden
   // under the overlay until the user happens to tap the dim area.
+  // While the IntroOverlay is up (introDone=false) the visitor MUST pick
+  // a language to proceed — a stray tap anywhere must NOT skip straight to
+  // the model. So this global first-touch dismiss only arms once the
+  // intro has handed off (introDone=true). In practice the IntroOverlay
+  // calls enterActive() itself on language pick, so this path is now a
+  // safety net rather than the primary dismiss.
   useEffect(() => {
-    if (phase !== "attractor") return;
+    if (phase !== "attractor" || !introDone) return;
     const onFirstTouch = (e: PointerEvent | KeyboardEvent) => {
       if (e instanceof KeyboardEvent && !["Enter", " ", "Escape"].includes(e.key)) return;
       enterActive();
@@ -120,7 +127,7 @@ export function AttractorOverlay() {
       document.removeEventListener("pointerdown", onFirstTouch, true);
       document.removeEventListener("keydown", onFirstTouch);
     };
-  }, [phase, enterActive]);
+  }, [phase, introDone, enterActive]);
 
   if (phase !== "attractor") return null;
 
