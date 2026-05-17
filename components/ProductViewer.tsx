@@ -439,6 +439,12 @@ function CameraRig({ active, detail }: { active: boolean; detail: boolean }) {
 // baked ContactShadows + AgX tone mapping) so this stays inside the GPU
 // budget — forward-shaded lights are nearly free vs the FBO passes we cut.
 function Lights() {
+  // The near-black glossy "nero" body lost its form after the env-blur /
+  // anti-fry pass (almost no reflections to model it on a dark backdrop).
+  // Lift the WHOLE rig ×1.4 only for that variant — coloured versions
+  // (which carry their own albedo) are unaffected. Reactive: re-renders
+  // when the colour rail switches.
+  const k = useTotemStore((s) => (s.colorVariant === "nero" ? 1.4 : 1));
   return (
     <>
       {/* Palette target = the Cycles hero render (sampled): body ≈
@@ -450,7 +456,7 @@ function Lights() {
        *  (two visible faces separate) without tinting the anthracite. */}
       <directionalLight
         position={[6, 7, 5.5]}
-        intensity={0.95}
+        intensity={0.95 * k}
         color="#fdf6ec"
         castShadow={false}
       />
@@ -458,7 +464,7 @@ function Lights() {
        *  does the fill now; this just keeps the shadow side neutral. */}
       <directionalLight
         position={[-6.5, 2.6, 4]}
-        intensity={0.45}
+        intensity={0.45 * k}
         color="#dde4ee"
         castShadow={false}
       />
@@ -466,7 +472,7 @@ function Lights() {
        *  silhouette edge: steam wand, gauge bezel, cup-warmer top. */}
       <directionalLight
         position={[-3.5, 6.5, -6]}
-        intensity={0.85}
+        intensity={0.85 * k}
         color="#eef3fb"
         castShadow={false}
       />
@@ -475,7 +481,7 @@ function Lights() {
        *  touch of local warmth so it doesn't read as grey plastic. */}
       <pointLight
         position={[2.4, 2.5, 3]}
-        intensity={1.6}
+        intensity={1.6 * k}
         distance={8}
         decay={2}
         color="#d9bd9c"
@@ -491,7 +497,7 @@ function Lights() {
         position={[0, 8, 1]}
         angle={0.6}
         penumbra={0.95}
-        intensity={24}
+        intensity={24 * k}
         distance={20}
         decay={2}
         color="#f4e4ca"
@@ -500,7 +506,7 @@ function Lights() {
       {/* Ambient bounce: neutral. Bright light-grey "floor" + soft neutral
        *  sky, matching the Cycles studio sweep that lifts the underside of
        *  the portafilter and group head off pure black. */}
-      <hemisphereLight args={["#eef0f2", "#8f8d8c", 0.5]} />
+      <hemisphereLight args={["#eef0f2", "#8f8d8c"]} intensity={0.5 * k} />
     </>
   );
 }

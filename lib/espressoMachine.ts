@@ -717,12 +717,12 @@ export function buildEspressoMachine(): THREE.Group {
     chrome: new THREE.MeshStandardMaterial({
       color: 0xeeeef0,
       metalness: 1.0,
-      // Anti-fry pass: 0.13→0.19 + envMapIntensity 1.4→1.05. The big new
-      // monoblock spout/wings made chrome the #2 boiler under auto-rotate
-      // (only SMAA, no temporal AA, weak iGPU). Wider lobe + dimmer env =
-      // no sub-pixel crawl. GPU cost unchanged.
-      roughness: 0.19,
-      envMapIntensity: 0.7,
+      // Anti-fry: rough 0.13→0.19→0.27, env →0.6. After the env-blur push
+      // body/copper went calm, but the big rounded monoblock spout still
+      // caught a hot key/env specular from some angles — a wider lobe +
+      // dimmer env spreads it to a soft sheen.
+      roughness: 0.27,
+      envMapIntensity: 0.6,
     }),
     chromeBrushed: new THREE.MeshStandardMaterial({
       color: 0xc8c8cc,
@@ -1219,8 +1219,8 @@ export function buildEspressoMachine(): THREE.Group {
   const wandChrome = new THREE.MeshStandardMaterial({
     color: 0xeeeef0,
     metalness: 1.0,
-    roughness: 0.34,
-    envMapIntensity: 0.7,
+    roughness: 0.42,
+    envMapIntensity: 0.55,
   });
   const wand = new THREE.Group();
   wand.add(new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.06, 24), wandChrome));

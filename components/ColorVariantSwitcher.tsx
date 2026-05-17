@@ -35,10 +35,10 @@ export function ColorVariantSwitcher() {
       className="pointer-events-auto fixed left-8 top-1/2 z-chrome -translate-y-1/2"
     >
       {/* Micro-stamped header — mirrors HotspotSidebar's, left-aligned */}
-      <p className="mb-3 pl-1 text-left font-mono text-[9px] uppercase tracking-[0.3em] text-copper-300/55">
+      <p className="mb-3 pl-1 text-left font-mono text-[9px] uppercase tracking-[0.3em] text-copper-200/85">
         {tSwitcher("label")}
       </p>
-      <ul className="flex flex-col gap-1.5 rounded-2xl border border-copper-500/15 bg-canvas/40 p-2.5 shadow-deep backdrop-blur-2xl">
+      <ul className="flex flex-col gap-1.5 rounded-2xl border border-copper-500/30 bg-canvas/65 p-2.5 shadow-deep backdrop-blur-2xl">
         {SMEG_COLORS.map((c) => {
           const isActive = c.id === colorVariant;
           const name = tColors(c.labelKey);
@@ -76,7 +76,7 @@ export function ColorVariantSwitcher() {
                   className={`min-w-0 flex-1 truncate text-left font-body text-[12px] uppercase tracking-[0.12em] transition-colors duration-200 ${
                     isActive
                       ? "text-cream-100"
-                      : "text-cream-300/60 group-hover:text-cream-100"
+                      : "text-cream-200/90 group-hover:text-cream-100"
                   }`}
                 >
                   {name}

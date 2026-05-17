@@ -86,10 +86,10 @@ export function HotspotSidebar() {
       className="pointer-events-auto fixed right-8 top-1/2 z-chrome -translate-y-1/2"
     >
       {/* Header micro-stampigliato sopra la lista */}
-      <p className="mb-3 pr-1 text-right font-mono text-[9px] uppercase tracking-[0.3em] text-copper-300/55">
+      <p className="mb-3 pr-1 text-right font-mono text-[9px] uppercase tracking-[0.3em] text-copper-200/85">
         {t("ui.features")}
       </p>
-      <ul className="flex flex-col gap-1.5 rounded-2xl border border-copper-500/15 bg-canvas/40 p-2.5 shadow-deep backdrop-blur-2xl">
+      <ul className="flex flex-col gap-1.5 rounded-2xl border border-copper-500/30 bg-canvas/65 p-2.5 shadow-deep backdrop-blur-2xl">
         {HOTSPOTS.map((h) => {
           const Icon = ICON_MAP[h.icon] ?? CircleDot;
           const isActive = activeHotspotId === h.id;
@@ -128,14 +128,14 @@ export function HotspotSidebar() {
                       isActive
                         ? "text-cream-100"
                         : isVisited
-                          ? "text-cream-300/80 group-hover:text-cream-100"
-                          : "text-copper-300/85 group-hover:text-copper-200"
+                          ? "text-cream-200/95 group-hover:text-cream-100"
+                          : "text-copper-200/95 group-hover:text-copper-100"
                     }`}
                   />
                   <span
                     aria-hidden
                     className={`absolute -bottom-0.5 right-0 font-mono text-[8px] tracking-widest ${
-                      isActive ? "text-copper-200" : "text-cream-400/45"
+                      isActive ? "text-copper-200" : "text-cream-300/75"
                     }`}
                   >
                     0{h.order}
