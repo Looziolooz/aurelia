@@ -105,7 +105,7 @@ export function HotspotSidebar() {
                   if (isActive) closeHotspot();
                   else openHotspot(h.id);
                 }}
-                className={`group relative flex h-[76px] w-[100px] items-center gap-3 rounded-xl px-3 transition-all duration-300 ease-out outline-none focus-visible:ring-1 focus-visible:ring-accent ${
+                className={`group relative flex h-[76px] w-[100px] items-center justify-center rounded-xl px-3 transition-all duration-300 ease-out outline-none focus-visible:ring-1 focus-visible:ring-accent ${
                   isActive
                     ? "bg-gradient-to-br from-copper-500/35 to-copper-700/10 shadow-copper-tight"
                     : "hover:bg-cream-100/[0.04]"
@@ -141,18 +141,11 @@ export function HotspotSidebar() {
                     0{h.order}
                   </span>
                 </div>
-                {/* Label visibile, troncata se troppo lunga */}
-                <span
-                  className={`min-w-0 flex-1 truncate text-left font-body text-[11px] uppercase tracking-[0.12em] transition-colors duration-200 ${
-                    isActive
-                      ? "text-cream-100"
-                      : isVisited
-                        ? "text-cream-300/65 group-hover:text-cream-100"
-                        : "text-cream-300/55 group-hover:text-cream-100"
-                  }`}
-                >
-                  {title}
-                </span>
+                {/* Label rimossa su richiesta ("togli le iniziali"): la rail
+                 *  ora è solo icona + ordinale. Il nome resta come
+                 *  aria-label sul <button> → nessuna regressione screen
+                 *  reader / AAA (DESIGN.md). Icona centrata nel footprint
+                 *  esistente (rail non ridimensionata). */}
               </button>
             </li>
           );
