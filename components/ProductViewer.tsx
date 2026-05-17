@@ -952,10 +952,14 @@ function ProductLoadingIndicator() {
   return (
     <div
       aria-live="polite"
-      className="pointer-events-none absolute inset-0 z-canvas bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950"
+      className="pointer-events-none absolute inset-0 z-canvas bg-canvas"
     >
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
-        <div className="w-2 h-2 bg-gradient-to-r from-amber-400 to-amber-600 rounded-full animate-pulse" />
+        {/* DESIGN.md G6 (no default Tailwind palette) + G2 (no generic
+         *  gradients): amber-400/600 + tri-stop neutral gradient replaced
+         *  with the locked tokens — bg-canvas surface, bg-accent dot
+         *  (copper #B87333 as BACKGROUND is the spec-permitted use). */}
+        <div className="w-2 h-2 bg-accent rounded-full animate-pulse" />
         {progress > 0 && progress < 100 && (
           <span className="font-mono text-[11px] tracking-[0.2em] text-cream-400/60 tabular-nums">
             {progress.toFixed(0)}%
