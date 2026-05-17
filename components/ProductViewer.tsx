@@ -231,7 +231,14 @@ function ProductModel({ onReady }: { onReady?: () => void }) {
     return group;
   }, []);
 
-  // Entrance animation + idle breathing
+  // Entrance animation only. The infinite idle bob was REMOVED (pass 5):
+  // user diagnosed the recurring "friggitoria/rumore" as motion-induced
+  // specular crawl — the model never stood still (bob + auto-rotate), so
+  // on the weak GPU with SMAA-only AA the env highlights crawled every
+  // frame. Material/light passes (3,4,4b,4c) could not fix a MOTION
+  // cause. The bob was also gratuitous decorative motion (DESIGN.md G10),
+  // so removing it is brand-aligned. Entrance settle (scale/position) is
+  // kept — that "introduces the product" (G10-permitted).
   useEffect(() => {
     if (!groupRef.current) return;
     const group = groupRef.current;
@@ -257,15 +264,9 @@ function ProductModel({ onReady }: { onReady?: () => void }) {
       delay: 0.2,
     });
 
-    // Idle breathing — gentle vertical bob.
-    gsap.to(group.position, {
-      y: 0.18,
-      duration: 3.5,
-      ease: "sine.inOut",
-      yoyo: true,
-      repeat: -1,
-      delay: 1.4,
-    });
+    // Idle breathing bob removed (pass 5) — see the useEffect header.
+    // The model now settles from the entrance and then holds STILL; no
+    // continuous sub-pixel motion for the specular to crawl on.
   }, []);
 
   // The procedural builder already sets per-material metalness / roughness
