@@ -356,9 +356,18 @@ function CameraRig({ active, detail }: { active: boolean; detail: boolean }) {
     const c = controlsRef.current;
     if (!c) return;
 
+    // Auto-rotation DISABLED (pass 5b, user decision D3). Previously the
+    // product spun during the attractor phase (active && !detail) at
+    // speed 0.6 — that continuous rotation was the second motion source
+    // of the recurring "friggitoria" (specular crawl on the weak GPU;
+    // the idle bob was the first, removed pass 5). Both branches now
+    // decay rotation to still. The attractor OVERLAY still does the
+    // attract; OrbitControls still lets a visitor drag to rotate by hand.
+    // `active`/`detail` kept in the guard so the intent (no spin in
+    // either phase) stays explicit and the props aren't unused.
     if (active && !detail) {
-      rotationSpeed.current = gsap.utils.interpolate(rotationSpeed.current, 0.6, 0.05);
-      c.autoRotate = true;
+      rotationSpeed.current = gsap.utils.interpolate(rotationSpeed.current, 0, 0.1);
+      c.autoRotate = rotationSpeed.current > 0.01;
       c.autoRotateSpeed = rotationSpeed.current;
     } else {
       rotationSpeed.current = gsap.utils.interpolate(rotationSpeed.current, 0, 0.1);
