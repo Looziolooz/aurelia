@@ -79,7 +79,16 @@ function broadcastOverrides(rows: HotspotRow[]) {
 }
 
 export function HotspotCalibrator() {
-  const [enabled, setEnabled] = useState(false);
+  // Lint (react-hooks/set-state-in-effect): was useState(false) + an
+  // effect calling setEnabled() from the URL on mount. Lazy initializer
+  // reads ?calibrate=1 once at construction — no setState in an effect.
+  // Dev-only tool; in normal use the param is absent so server and
+  // client both compute false (no hydration drift).
+  const [enabled] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("calibrate") === "1",
+  );
   const initial = useMemo(
     () => (hotspotsData.hotspots as HotspotRow[]).map((h) => ({ ...h })),
     [],
@@ -87,14 +96,13 @@ export function HotspotCalibrator() {
   const [rows, setRows] = useState<HotspotRow[]>(initial);
   const [activeId, setActiveId] = useState<string>(initial[0]?.id ?? "");
   const [placeMode, setPlaceMode] = useState(false);
+  // Lint (react-hooks/refs): write the latest-value ref in an effect,
+  // not during render. The only consumer is the async surface-picked
+  // handler (post-commit), so a one-tick-later update is equivalent.
   const activeRef = useRef(activeId);
-  activeRef.current = activeId;
-
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const params = new URLSearchParams(window.location.search);
-    setEnabled(params.get("calibrate") === "1");
-  }, []);
+    activeRef.current = activeId;
+  });
 
   // Publish current rows to the R3F scene whenever they change.
   useEffect(() => {
@@ -161,10 +169,8 @@ export function HotspotCalibrator() {
     const text = JSON.stringify(out, null, 2);
     try {
       await navigator.clipboard.writeText(text);
-      // eslint-disable-next-line no-alert
       window.alert("hotspots.json copied to clipboard - paste it into data/hotspots.json");
     } catch {
-      // eslint-disable-next-line no-alert
       window.prompt("Copy this JSON into data/hotspots.json:", text);
     }
   };
