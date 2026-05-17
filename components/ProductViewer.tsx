@@ -15,7 +15,14 @@
  * for phase transitions, still emits the same translated alt text.
  */
 
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import dynamic from "next/dynamic";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
@@ -31,11 +38,11 @@ import {
   SMAA,
   Vignette,
 } from "@react-three/postprocessing";
-import { useTranslations } from "next-intl";
 import gsap from "gsap";
 import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { EffectComposer as EffectComposerImpl } from "postprocessing";
+import type { BloomEffect } from "postprocessing";
 import { useTotemStore } from "@/lib/store";
 import {
   applyEmergencyDegrade,
@@ -43,6 +50,20 @@ import {
   buildEspressoMachine,
 } from "@/lib/espressoMachine";
 import hotspotsData from "@/data/hotspots.json";
+
+// SSR-safe "mounted on the client" flag. Replaces the
+// useState(false)+useEffect(setState(true)) pattern that tripped
+// react-hooks/set-state-in-effect: useSyncExternalStore returns the
+// server snapshot (false) during SSR/hydration, then the client
+// snapshot (true) — identical effect, no setState in an effect.
+const subscribeNoop = () => () => {};
+function useMounted(): boolean {
+  return useSyncExternalStore(
+    subscribeNoop,
+    () => true,
+    () => false,
+  );
+}
 
 // Runtime patches. Idempotent via a window-level sentinel so HMR
 // re-imports don't double-wrap.
@@ -632,7 +653,7 @@ function HotspotScreenProjector() {
 
 function PostFXInner() {
   const { gl, camera } = useThree();
-  const bloomRef = useRef<any>(null);
+  const bloomRef = useRef<BloomEffect | null>(null);
   const bloomIntensity = useRef(0.19);
   // postprocessing's EffectComposer reads `gl.getContext().getContextAttributes().alpha`
   // synchronously in its constructor. In React 19 StrictMode + Turbopack dev,
@@ -647,7 +668,7 @@ function PostFXInner() {
     let cancelled = false;
     const verify = () => {
       if (cancelled) return;
-      const ctx = (gl as any).getContext?.();
+      const ctx = gl.getContext();
       const attrs = ctx && typeof ctx.getContextAttributes === "function"
         ? ctx.getContextAttributes()
         : null;
@@ -668,9 +689,12 @@ function PostFXInner() {
   // Pulsing bloom intensity for cinematographic glow on chrome/copper
   // Uses performance.now() instead of THREE.Clock to avoid deprecation warnings
   // (THREE.Clock was deprecated in r184+ in favor of THREE.Timer).
-  const startTime = useRef(performance.now());
+  // useRef(0) keeps render pure (react-hooks/purity); the impure
+  // performance.now() is captured lazily inside the frame loop instead.
+  const startTime = useRef(0);
   useFrame(() => {
     if (!bloomRef.current) return;
+    if (startTime.current === 0) startTime.current = performance.now();
     const elapsed = (performance.now() - startTime.current) / 1000;
     const pulse = Math.sin(elapsed * 0.5) * 0.025; // calmer, was *0.08
     bloomIntensity.current = 0.19 + pulse;          // mood pass: base 0.16→0.19
@@ -816,7 +840,12 @@ function Scene({
 }
 
 function ProductCanvas() {
-  const [ready, setReady] = useState(false);
+  // react-hooks/set-state-in-effect: was useState(false) + an effect
+  // calling setReady(true) on mount. useMounted() (useSyncExternalStore)
+  // is the SSR-safe equivalent with no setState in an effect — `ready`
+  // still flips false→true once after hydration, gating the Canvas
+  // client-only exactly as before.
+  const ready = useMounted();
   const [effectsReady, setEffectsReady] = useState(false);
   const [modelReady, setModelReady] = useState(false);
   // Kiosk safety net. If the GPU drops the WebGL context (driver reset,
@@ -829,10 +858,6 @@ function ProductCanvas() {
   // loading indicator, never a frozen product still.
   const [contextLost, setContextLost] = useState(false);
   const [glKey, setGlKey] = useState(0);
-
-  useEffect(() => {
-    setReady(true);
-  }, []);
 
   useEffect(() => {
     if (!ready) return;
