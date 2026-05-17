@@ -774,15 +774,21 @@ export function buildEspressoMachine(): THREE.Group {
       color: 0xffffff,
       metalness: 0.0,
       // roughness 0.0 + envMap 1.2 = a perfect convex mirror → the white
-      // starburst flare on the gauge. A hair of roughness + low env keeps
-      // it readable glass without the blown sunburst.
-      roughness: 0.06,
+      // starburst flare on the gauge. PASS 4 (live BLACK build, "foto 2":
+      // at certain rotation angles the convex dome still went a featureless
+      // white-orange disc — the env lobe sweeping a near-mirror). roughness
+      // 0.06→0.20 widens the specular lobe to a soft sheen (no tight
+      // flare), envMapIntensity 0.5→0.20 stops the dome from mirroring the
+      // bright env at glancing angles; dithering matches the body fix and
+      // smooths the dome gradient. Still reads as glass over the dial.
+      roughness: 0.2,
       transmission: 0.95,
       thickness: 0.08,
       transparent: true,
       opacity: 0.5,
-      envMapIntensity: 0.5,
+      envMapIntensity: 0.2,
       ior: 1.5,
+      dithering: true,
     }),
     // Cup-warmer mesh blew to a solid white slab under the overhead spot.
     // Satin steel (lower metal, rougher, low env) — passive warmer, not a
