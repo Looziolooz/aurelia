@@ -904,12 +904,15 @@ export function buildEspressoMachine(): THREE.Group {
   gauge.add(gCase);
   for (let i = 0; i < 60; i++) {
     const a = (i / 60) * Math.PI * 2;
-    const k = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.045, 0.06), M.chrome);
+    // chromeBrushed (satin) not chrome (mirror): 60 mirror facets in a
+    // ring blew a white sparkle halo under the key/spot. A real knurled
+    // pressure-gauge bezel is brushed steel anyway — physically correct.
+    const k = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.045, 0.06), M.chromeBrushed);
     k.position.set(Math.cos(a) * 0.36, Math.sin(a) * 0.36, 0);
     k.rotation.z = a + Math.PI / 2;
     gauge.add(k);
   }
-  const gRingIn = new THREE.Mesh(new THREE.TorusGeometry(0.295, 0.018, 8, 48), M.chrome);
+  const gRingIn = new THREE.Mesh(new THREE.TorusGeometry(0.295, 0.018, 8, 48), M.chromeBrushed);
   gauge.add(gRingIn);
   const gFace = new THREE.Mesh(new THREE.CircleGeometry(0.28, 64), M.gauge);
   gFace.position.z = 0.022;
@@ -1209,9 +1212,18 @@ export function buildEspressoMachine(): THREE.Group {
   });
   m.add(PF);
 
-  // Steam wand
+  // Steam wand. A thin vertical chrome tube is the worst case for
+  // specular crawl (a thin highlight line that sweeps as the model
+  // orbits). Dedicated calmer chrome, isolated so the rest of the
+  // chrome (portafilter/spout) stays sharp.
+  const wandChrome = new THREE.MeshStandardMaterial({
+    color: 0xeeeef0,
+    metalness: 1.0,
+    roughness: 0.34,
+    envMapIntensity: 0.7,
+  });
   const wand = new THREE.Group();
-  wand.add(new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.06, 24), M.chrome));
+  wand.add(new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.06, 24), wandChrome));
   const wGrip = new THREE.Mesh(new THREE.CylinderGeometry(0.048, 0.048, 0.14, 24), M.rubber);
   wGrip.position.y = -0.105;
   wand.add(wGrip);
@@ -1221,7 +1233,7 @@ export function buildEspressoMachine(): THREE.Group {
     new THREE.Vector3(0.015, -0.7, 0.06),
     new THREE.Vector3(0.015, -1.0, 0.06),
   ]);
-  wand.add(new THREE.Mesh(new THREE.TubeGeometry(wandCurve, 40, 0.028, 16, false), M.chrome));
+  wand.add(new THREE.Mesh(new THREE.TubeGeometry(wandCurve, 40, 0.028, 16, false), wandChrome));
   const tipGroup = new THREE.Group();
   const tipProfile = [
     new THREE.Vector2(0.026, 0.0), new THREE.Vector2(0.03, 0.012),
@@ -1302,8 +1314,8 @@ export function buildEspressoMachine(): THREE.Group {
   const ceramic = new THREE.MeshStandardMaterial({
     color: 0xf1efe9,
     metalness: 0.0,
-    roughness: 0.32,
-    envMapIntensity: 0.6,
+    roughness: 0.5, // "tazze troppo riflesso": satin glaze, was 0.32
+    envMapIntensity: 0.3,
   });
   // Stackable espresso cup (per the reference): rounded narrow base →
   // step → wider upper cylinder → rim, hollow interior. White ceramic.
@@ -1355,6 +1367,9 @@ export function buildEspressoMachine(): THREE.Group {
     cup.add(body);
     const band = new THREE.Mesh(cupBandGeo, M.body);
     band.position.y = 0.305;
+    // Tracks the machine COLOUR but routes to a ceramic (non-mirror)
+    // material in applyVariant — "tazze troppo riflesso".
+    band.userData.smegCupBand = true;
     cup.add(band);
     const logo = new THREE.Mesh(cupLogoGeo, cupLogoMat);
     logo.position.y = 0.315;
@@ -1439,19 +1454,44 @@ function glossyBody(): THREE.MeshPhysicalMaterial {
   return _glossyBody;
 }
 
+let _cupBand: THREE.MeshStandardMaterial | null = null;
+
+function cupBandMat(): THREE.MeshStandardMaterial {
+  if (_cupBand) return _cupBand;
+  // Cups follow the machine COLOUR but are glazed CERAMIC, not the mirror
+  // enamel: no clearcoat, satin roughness, low env — "tazze troppo
+  // riflesso". Decoupled from _glossyBody so the body stays a mirror
+  // while the cup band reads like painted porcelain.
+  _cupBand = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    metalness: 0.0,
+    roughness: 0.5,
+    envMapIntensity: 0.3,
+  });
+  return _cupBand;
+}
+
 /**
  * Recolour the machine shell in place. Idempotent and allocation-free
  * after the first call — safe to call synchronously during the build (so
  * the first paint is already the chosen colour, no anthracite flash) and
- * again on every colour change.
+ * again on every colour change. Cup bands track the same colour but on a
+ * separate ceramic material (not the mirror).
  */
 export function applyVariant(group: THREE.Group, colorId: SmegColorId): void {
+  const hex = getSmegColor(colorId).hex;
   const mat = glossyBody();
-  mat.color.set(getSmegColor(colorId).hex);
+  mat.color.set(hex);
   mat.needsUpdate = true;
+  const cup = cupBandMat();
+  cup.color.set(hex);
+  cup.needsUpdate = true;
   group.traverse((o) => {
     const mesh = o as THREE.Mesh;
-    if (mesh.isMesh && mesh.userData.smegBody) {
+    if (!mesh.isMesh) return;
+    if (mesh.userData.smegCupBand) {
+      mesh.material = cup;
+    } else if (mesh.userData.smegBody) {
       mesh.material = mat;
     }
   });

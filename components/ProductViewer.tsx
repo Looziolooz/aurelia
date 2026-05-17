@@ -450,7 +450,7 @@ function Lights() {
        *  (two visible faces separate) without tinting the anthracite. */}
       <directionalLight
         position={[6, 7, 5.5]}
-        intensity={1.2}
+        intensity={0.95}
         color="#fdf6ec"
         castShadow={false}
       />
@@ -475,7 +475,7 @@ function Lights() {
        *  touch of local warmth so it doesn't read as grey plastic. */}
       <pointLight
         position={[2.4, 2.5, 3]}
-        intensity={2.4}
+        intensity={1.6}
         distance={8}
         decay={2}
         color="#d9bd9c"
@@ -491,7 +491,7 @@ function Lights() {
         position={[0, 8, 1]}
         angle={0.6}
         penumbra={0.95}
-        intensity={40}
+        intensity={24}
         distance={20}
         decay={2}
         color="#f4e4ca"
@@ -710,13 +710,20 @@ function Scene({
       {/* 0.7: the env reflection is the view-dependent term that "sweeps"
        *  across the metals as the camera orbits. Lower = calmer mirror,
        *  and closer to the matte-ish Cycles hero (coherence-positive). */}
-      {/* blur 0.5: a SHARP HDR reflected on metal crawls/sparkles as the
-       *  model orbits no matter the roughness — pre-blurring the PMREM
-       *  turns the reflection into a soft sheen with no high-freq detail
-       *  to alias. Zero GPU cost (same env, blurred param). intensity
-       *  0.7→0.5: even calmer mirror, toward the matte Cycles hero. This
-       *  is the single biggest anti-"friggitorio" lever (was unused). */}
-      <Environment files={ENV_HDR} environmentIntensity={0.5} blur={0.5} />
+      {/* A SHARP HDR reflected on metal crawls/sparkles as the model
+       *  orbits no matter the roughness — pre-blurring the PMREM turns the
+       *  reflection into a soft sheen with no high-freq detail to alias.
+       *  The single biggest anti-"friggitorio" lever. Pushed HARDER after
+       *  it still sparkled: blur 0.5→0.72, intensity 0.5→0.4, and
+       *  resolution 64 (reflection-only env, no visible background — a
+       *  low-res blurred cubemap is plenty AND costs LESS GPU, which also
+       *  helps the context-loss ceiling). */}
+      <Environment
+        files={ENV_HDR}
+        environmentIntensity={0.4}
+        blur={0.72}
+        resolution={64}
+      />
 
       <Lights />
 
