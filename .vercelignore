@@ -1,0 +1,45 @@
+# Keep the Vercel upload/build lean and free of internal/heavy material.
+# The deployed totem is fully procedural (lib/espressoMachine.ts) and the
+# ONLY runtime public asset is /hdr/studio_small_03_1k.hdr. Everything
+# excluded here is build-time tooling, the offline Blender/CAD pipeline,
+# reference art, or vestigial models — none of it is needed to build or
+# run the Next app on Vercel.
+
+# ── Offline 3D / CAD pipeline & experiments (≈260 MB, not runtime) ──
+assets/
+_archive/
+.venv-cad/
+meshy_output/
+meshy_output*/
+scripts/
+check_blender_ops.py
+
+# ── Reference art / unused heavy public assets ──
+# (Internal client-ish reference photos — must not hit a public CDN.)
+public/foto 360 gradi/
+# Vestigial GLBs — the live model is procedural, nothing loads these.
+public/models/
+# Only studio_small_03_1k.hdr is used at runtime; drop the big unused HDRs.
+public/hdr/golden_gate_hills_2k.hdr
+public/hdr/studio_small_03_2k.hdr
+
+# ── Tests / QA / docs / scratch ──
+tests/
+test-results/
+playwright-report/
+.lighthouseci/
+docs/
+**/_live_*.png
+data/*.bak.json
+data/*.bak
+
+# ── Tooling / agent / editor state ──
+.claude/
+.opencode/
+.gstack/
+.cursor/
+*.log
+
+# ── Rebuilt by Vercel ──
+.next/
+node_modules/

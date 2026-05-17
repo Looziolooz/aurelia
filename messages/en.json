@@ -1,0 +1,163 @@
+{
+  "meta": {
+    "title": "AURELIA Pro X1 — Espresso, sculpted.",
+    "description": "Compact premium espresso machine. Made in Italy."
+  },
+  "product": {
+    "name": "AURELIA Pro X1",
+    "tagline": "Espresso, sculpted.",
+    "subtitle": "Compact premium espresso machine",
+    "origin": "Made in Italy",
+    "price": "€ 1,290"
+  },
+  "attractor": {
+    "headline": "AURELIA Pro X1",
+    "tagline": "Espresso, sculpted.",
+    "invite": "Touch to explore",
+    "discover": "Discover every detail",
+    "swipeHint": "Rotate and zoom",
+    "rotateHint": "Drag to rotate"
+  },
+  "ui": {
+    "language": "Language",
+    "languageShort": "EN",
+    "close": "Close",
+    "panel": {
+      "close": "Close panel"
+    },
+    "feature": "Feature",
+    "features": "Product features",
+    "specs": "Technical specs",
+    "specsShort": "Specs",
+    "back": "Back",
+    "skipToContent": "Skip to main content",
+    "idleNotice": "Waiting…",
+    "idleReset": "Standing by…",
+    "loading": "Loading model",
+    "tapGesture": "Tap",
+    "rotateGesture": "Rotate",
+    "pinchGesture": "Zoom",
+    "ar": "View in AR"
+  },
+  "a11y": {
+    "hotspotCount": "Hotspot {current} of {total}",
+    "panelOpen": "Details panel opened",
+    "panelClose": "Details panel closed",
+    "modelLoaded": "3D model loaded",
+    "languageChanged": "Language changed to English"
+  },
+  "inquiry": {
+    "cta": "Request information",
+    "eyebrow": "Direct contact",
+    "title": "Request a tailored quote",
+    "subtitle": "Our sales lead will get back to you within 24 hours to configure the ideal setup.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Business email",
+    "company": "Company · Venue",
+    "sector": "Sector",
+    "sectorPlaceholder": "Sector — select",
+    "sectorHospitality": "Hospitality · Hotellerie",
+    "sectorRestaurant": "Restaurant · Café",
+    "sectorPrivate": "Private",
+    "submit": "Send request",
+    "close": "Close",
+    "mailSubject": "AURELIA Pro X1 info request",
+    "mailFooter": "Sent from the AURELIA Pro X1 trade-show kiosk."
+  },
+  "hotspot": {
+    "display": {
+      "title": "3.5″ TFT display",
+      "description": "Capacitive color screen at 480×320 px. Shows boiler temperature, extraction pressure, shot timer and custom profiles. Bilingual interface available.",
+      "specs": {
+        "Diagonal": "3.5 inches",
+        "Resolution": "480 × 320 px",
+        "Type": "Capacitive TFT",
+        "Profiles": "4 customizable"
+      }
+    },
+    "gauge": {
+      "title": "Premium analog gauge",
+      "description": "Boiler pressure gauge with burnished copper-finish dial and solid copper bezel. Precision indicator needle. Anti-scratch tempered glass.",
+      "specs": {
+        "Scale": "0 – 15 bar",
+        "Diameter": "50 mm",
+        "Bezel": "Burnished copper",
+        "Glass": "Tempered"
+      }
+    },
+    "controls": {
+      "title": "Backlit capacitive controls",
+      "description": "Three capacitive buttons: power, group illumination and manual selection. Under-glass tactile response, adjustable white backlighting, IP54 rated.",
+      "specs": {
+        "Buttons": "3 capacitive",
+        "Backlight": "Adjustable white",
+        "Rating": "IP54",
+        "Response": "< 30 ms"
+      }
+    },
+    "group": {
+      "title": "Group head with copper collar",
+      "description": "Custom 58 mm group head with iconic burnished copper collar. Stainless-steel diffuser, automatic pre-infusion, thermal stability guaranteed by the thermoblock.",
+      "specs": {
+        "Diameter": "58 mm professional",
+        "Collar material": "Burnished copper",
+        "Pre-infusion": "Automatic 4 sec",
+        "Diffuser": "AISI 316 steel"
+      }
+    },
+    "portafilter": {
+      "title": "58 mm portafilter with walnut handle",
+      "description": "Polished chrome 58 mm bottomless portafilter. Hand-crafted Italian walnut handle with satin oil finish. Twin-spout chromed beak.",
+      "specs": {
+        "Diameter": "58 mm",
+        "Type": "Bottomless",
+        "Handle": "Italian walnut",
+        "Weight": "480 g"
+      }
+    },
+    "steam": {
+      "title": "Articulated copper steam wand",
+      "description": "Burnished copper steam pipe with ergonomic S-curve. 360° articulated joint protected by cool-touch gasket. Chromed tip with four holes for championship-grade microfoam.",
+      "specs": {
+        "Pipe material": "Burnished copper",
+        "Articulation": "360°",
+        "Tip holes": "4 directed",
+        "Gasket": "Cool-touch"
+      }
+    },
+    "warmer": {
+      "title": "Steel cup warmer top",
+      "description": "Top surface in 304 stainless-steel mesh. Passively heated by the thermoblock. Holds up to 6 pre-warmed espresso cups.",
+      "specs": {
+        "Material": "AISI 304 steel",
+        "Pattern": "Diamond mesh",
+        "Heating": "Passive",
+        "Capacity": "6 cups"
+      }
+    },
+    "drip": {
+      "title": "Drip tray with steel grate",
+      "description": "Removable reinforced matte ABS basin with stainless-steel top grate. Chevron pattern optimises drainage and ease of cleaning.",
+      "specs": {
+        "Basin capacity": "0.5 L",
+        "Grate material": "AISI 304",
+        "Pattern": "Chevron",
+        "Dishwasher safe": "Yes"
+      }
+    }
+  },
+  "footer": {
+    "disclaimer": "Actual product dimensions and features may vary. Prices subject to change.",
+    "copyright": "© 2026 AURELIA Espresso Manifattura — Prototype brand for fair demonstration."
+  },
+  "colors": {
+    "nero": "Black",
+    "rosso": "Red",
+    "verde": "Green",
+    "azzurro": "Light blue"
+  },
+  "colorSwitcher": {
+    "label": "Choose colour"
+  }
+}

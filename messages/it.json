@@ -1,0 +1,163 @@
+{
+  "meta": {
+    "title": "AURELIA Pro X1 — Il caffè, scolpito.",
+    "description": "Macchina espresso compatta premium. Made in Italy."
+  },
+  "product": {
+    "name": "AURELIA Pro X1",
+    "tagline": "Il caffè, scolpito.",
+    "subtitle": "Macchina espresso compatta premium",
+    "origin": "Made in Italy",
+    "price": "€ 1.290"
+  },
+  "attractor": {
+    "headline": "AURELIA Pro X1",
+    "tagline": "Il caffè, scolpito.",
+    "invite": "Tocca per esplorare",
+    "discover": "Scopri ogni dettaglio",
+    "swipeHint": "Ruota e ingrandisci",
+    "rotateHint": "Trascina per ruotare"
+  },
+  "ui": {
+    "language": "Lingua",
+    "languageShort": "IT",
+    "close": "Chiudi",
+    "panel": {
+      "close": "Chiudi pannello"
+    },
+    "feature": "Funzione",
+    "features": "Caratteristiche del prodotto",
+    "specs": "Specifiche tecniche",
+    "specsShort": "Specs",
+    "back": "Indietro",
+    "skipToContent": "Salta al contenuto principale",
+    "idleNotice": "In attesa…",
+    "idleReset": "In attesa…",
+    "loading": "Caricamento del modello",
+    "tapGesture": "Tocca",
+    "rotateGesture": "Ruota",
+    "pinchGesture": "Zoom",
+    "ar": "Vedi in AR"
+  },
+  "a11y": {
+    "hotspotCount": "Punto di interesse {current} di {total}",
+    "panelOpen": "Pannello dettagli aperto",
+    "panelClose": "Pannello dettagli chiuso",
+    "modelLoaded": "Modello 3D caricato",
+    "languageChanged": "Lingua cambiata in italiano"
+  },
+  "inquiry": {
+    "cta": "Richiedi informazioni",
+    "eyebrow": "Contatto diretto",
+    "title": "Richiedi un preventivo personalizzato",
+    "subtitle": "Il nostro responsabile vendite ti contatterà entro 24 ore per configurare l'allestimento ideale.",
+    "firstName": "Nome",
+    "lastName": "Cognome",
+    "email": "Email aziendale",
+    "company": "Azienda · Locale",
+    "sector": "Settore",
+    "sectorPlaceholder": "Settore — seleziona",
+    "sectorHospitality": "Hotellerie · Hospitality",
+    "sectorRestaurant": "Ristorazione · Caffetteria",
+    "sectorPrivate": "Privato",
+    "submit": "Invia richiesta",
+    "close": "Chiudi",
+    "mailSubject": "Richiesta info AURELIA Pro X1",
+    "mailFooter": "Inviato dal totem fiera AURELIA Pro X1."
+  },
+  "hotspot": {
+    "display": {
+      "title": "Display TFT 3,5″",
+      "description": "Schermo capacitivo a colori 480×320 px. Visualizza temperatura caldaia, pressione di estrazione, timer shot e profili personalizzati. Interfaccia bilingue selezionabile.",
+      "specs": {
+        "Diagonale": "3,5 pollici",
+        "Risoluzione": "480 × 320 px",
+        "Tipo": "TFT capacitivo",
+        "Profili": "4 personalizzabili"
+      }
+    },
+    "gauge": {
+      "title": "Manometro analogico premium",
+      "description": "Manometro di pressione caldaia con quadrante in finitura rame brunito e ghiera in rame massiccio. Lancetta indicatrice di precisione. Vetro temperato antigraffio.",
+      "specs": {
+        "Scala": "0 – 15 bar",
+        "Diametro": "50 mm",
+        "Ghiera": "Rame brunito",
+        "Vetro": "Temperato"
+      }
+    },
+    "controls": {
+      "title": "Controlli capacitivi retroilluminati",
+      "description": "Tre pulsanti capacitivi: accensione, illuminazione gruppo e selezione manuale. Risposta tattile sotto vetro, retroilluminazione bianca regolabile, IP54.",
+      "specs": {
+        "Pulsanti": "3 capacitivi",
+        "Retroilluminazione": "Bianca regolabile",
+        "Protezione": "IP54",
+        "Risposta": "< 30 ms"
+      }
+    },
+    "group": {
+      "title": "Gruppo erogatore con collare in rame",
+      "description": "Gruppo erogatore custom da 58 mm con collare iconico in rame brunito. Diffusore in acciaio inossidabile, pre-infusione automatica, stabilità termica garantita dal thermoblock.",
+      "specs": {
+        "Diametro": "58 mm professionale",
+        "Materiale collare": "Rame brunito",
+        "Pre-infusione": "Automatica 4 sec",
+        "Diffusore": "Acciaio AISI 316"
+      }
+    },
+    "portafilter": {
+      "title": "Portafiltro 58 mm con manico in noce",
+      "description": "Portafiltro bottomless da 58 mm in cromo lucido. Manico in noce nazionale lavorato a mano, finitura olio satinata. Beak cromato a doppio spout.",
+      "specs": {
+        "Diametro": "58 mm",
+        "Tipo": "Bottomless",
+        "Manico": "Noce nazionale",
+        "Peso": "480 g"
+      }
+    },
+    "steam": {
+      "title": "Lancia vapore in rame articolata",
+      "description": "Tubo vapore in rame brunito con curvatura ergonomica a S. Snodo articolato 360° protetto da guarnizione cool-touch. Punta cromata con quattro fori per microschiuma da campionato.",
+      "specs": {
+        "Materiale tubo": "Rame brunito",
+        "Articolazione": "360°",
+        "Fori punta": "4 orientati",
+        "Guarnizione": "Cool-touch"
+      }
+    },
+    "warmer": {
+      "title": "Scaldatazze superiore in acciaio",
+      "description": "Superficie superiore in maglia di acciaio inossidabile 304. Riscaldata passivamente dal calore del thermoblock. Capacità fino a 6 tazze espresso preriscaldate.",
+      "specs": {
+        "Materiale": "Acciaio AISI 304",
+        "Pattern": "Maglia diamantata",
+        "Riscaldamento": "Passivo",
+        "Capacità": "6 tazze"
+      }
+    },
+    "drip": {
+      "title": "Vasca raccogli-gocce con grata in acciaio",
+      "description": "Vasca rimovibile in ABS matte rinforzato con grata superiore in acciaio inossidabile. Pattern chevron che ottimizza il drenaggio e facilita la pulizia.",
+      "specs": {
+        "Capacità vasca": "0,5 L",
+        "Materiale grata": "AISI 304",
+        "Pattern": "Chevron",
+        "Lavabile lavastoviglie": "Sì"
+      }
+    }
+  },
+  "footer": {
+    "disclaimer": "Dimensioni e dotazioni del prodotto reale possono differire. Prezzi soggetti a variazione.",
+    "copyright": "© 2026 AURELIA Espresso Manifattura — Brand di prototipo per dimostrazione fiera."
+  },
+  "colors": {
+    "nero": "Nero",
+    "rosso": "Rosso",
+    "verde": "Verde",
+    "azzurro": "Azzurro"
+  },
+  "colorSwitcher": {
+    "label": "Scegli il colore"
+  }
+}

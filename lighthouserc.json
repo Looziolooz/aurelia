@@ -1,0 +1,30 @@
+{
+  "_comment": "Lighthouse CI config for brief §6 #8: mobile ≥90 Performance, 100 Accessibility, 100 Best Practices. Run on a PRODUCTION build (next build && next start), not dev — Turbopack dev is not representative. Locally/CI: `npx @lhci/cli autorun`. Not runnable in this sandboxed env (no Chrome + no install perms); config is the deliverable so the threshold is enforceable wherever Lighthouse can run.",
+  "ci": {
+    "collect": {
+      "url": ["http://localhost:3000/it"],
+      "startServerCommand": "bun run start",
+      "startServerReadyPattern": "Ready",
+      "numberOfRuns": 3,
+      "settings": {
+        "preset": "desktop",
+        "formFactor": "mobile",
+        "screenEmulation": {
+          "mobile": true,
+          "width": 1080,
+          "height": 1920,
+          "deviceScaleFactor": 2
+        },
+        "throttlingMethod": "simulate"
+      }
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["error", { "minScore": 0.9 }],
+        "categories:accessibility": ["error", { "minScore": 1.0 }],
+        "categories:best-practices": ["error", { "minScore": 1.0 }]
+      }
+    },
+    "upload": { "target": "filesystem", "outputDir": ".lighthouseci" }
+  }
+}

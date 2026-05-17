@@ -1,0 +1,163 @@
+{
+  "meta": {
+    "title": "AURELIA Pro X1 — Espresso, skulpterad.",
+    "description": "Kompakt premium espressomaskin. Tillverkad i Italien."
+  },
+  "product": {
+    "name": "AURELIA Pro X1",
+    "tagline": "Espresso, skulpterad.",
+    "subtitle": "Kompakt premium espressomaskin",
+    "origin": "Tillverkad i Italien",
+    "price": "€ 1 290"
+  },
+  "attractor": {
+    "headline": "AURELIA Pro X1",
+    "tagline": "Espresso, skulpterad.",
+    "invite": "Tryck för att utforska",
+    "discover": "Upptäck varje detalj",
+    "swipeHint": "Rotera och zooma",
+    "rotateHint": "Dra för att rotera"
+  },
+  "ui": {
+    "language": "Språk",
+    "languageShort": "SV",
+    "close": "Stäng",
+    "panel": {
+      "close": "Stäng panelen"
+    },
+    "feature": "Funktion",
+    "features": "Produktfunktioner",
+    "specs": "Tekniska specifikationer",
+    "specsShort": "Specs",
+    "back": "Tillbaka",
+    "skipToContent": "Hoppa till huvudinnehåll",
+    "idleNotice": "Väntar…",
+    "idleReset": "Väntar…",
+    "loading": "Laddar modell",
+    "tapGesture": "Tryck",
+    "rotateGesture": "Rotera",
+    "pinchGesture": "Zoom",
+    "ar": "Visa i AR"
+  },
+  "a11y": {
+    "hotspotCount": "Intressepunkt {current} av {total}",
+    "panelOpen": "Detaljpanel öppnad",
+    "panelClose": "Detaljpanel stängd",
+    "modelLoaded": "3D-modell laddad",
+    "languageChanged": "Språk ändrat till svenska"
+  },
+  "inquiry": {
+    "cta": "Begär information",
+    "eyebrow": "Direktkontakt",
+    "title": "Begär en skräddarsydd offert",
+    "subtitle": "Vår säljansvarige återkommer inom 24 timmar för att konfigurera den perfekta lösningen.",
+    "firstName": "Förnamn",
+    "lastName": "Efternamn",
+    "email": "Företagsmejl",
+    "company": "Företag · Lokal",
+    "sector": "Bransch",
+    "sectorPlaceholder": "Bransch — välj",
+    "sectorHospitality": "Hotell · Hospitality",
+    "sectorRestaurant": "Restaurang · Café",
+    "sectorPrivate": "Privat",
+    "submit": "Skicka förfrågan",
+    "close": "Stäng",
+    "mailSubject": "AURELIA Pro X1 informationsförfrågan",
+    "mailFooter": "Skickat från AURELIA Pro X1-mässkiosken."
+  },
+  "hotspot": {
+    "display": {
+      "title": "3,5″ TFT-skärm",
+      "description": "Kapacitiv färgskärm på 480×320 px. Visar koktemperatur, extraktionstryck, shot-timer och anpassade profiler. Tvåspråkigt gränssnitt valbart.",
+      "specs": {
+        "Diagonal": "3,5 tum",
+        "Upplösning": "480 × 320 px",
+        "Typ": "Kapacitiv TFT",
+        "Profiler": "4 anpassbara"
+      }
+    },
+    "gauge": {
+      "title": "Premium analog mätare",
+      "description": "Koktrycksmätare med urtavla i brunerad kopparfinish och fattning i massiv koppar. Precisionsvisare. Reptåligt härdat glas.",
+      "specs": {
+        "Skala": "0 – 15 bar",
+        "Diameter": "50 mm",
+        "Fattning": "Brunerad koppar",
+        "Glas": "Härdat"
+      }
+    },
+    "controls": {
+      "title": "Bakgrundsbelysta kapacitiva kontroller",
+      "description": "Tre kapacitiva knappar: ström, grupputbelysning och manuellt val. Taktil respons under glas, justerbar vit bakgrundsbelysning, IP54-klassad.",
+      "specs": {
+        "Knappar": "3 kapacitiva",
+        "Bakgrundsljus": "Justerbart vitt",
+        "Klassning": "IP54",
+        "Respons": "< 30 ms"
+      }
+    },
+    "group": {
+      "title": "Bryggrupp med kopparkrage",
+      "description": "Specialdesignad 58 mm bryggrupp med ikonisk brunerad kopparkrage. Spridare i rostfritt stål, automatisk förbrygging, termisk stabilitet garanterad av thermoblock.",
+      "specs": {
+        "Diameter": "58 mm professionell",
+        "Krage-material": "Brunerad koppar",
+        "Förbrygging": "Automatisk 4 sek",
+        "Spridare": "AISI 316-stål"
+      }
+    },
+    "portafilter": {
+      "title": "58 mm portafilter med valnötshandtag",
+      "description": "Polerat förkromat 58 mm bottenlöst portafilter. Handtag i italiensk valnöt handarbetat med satinerad oljefinish. Förkromad pip med dubbelutlopp.",
+      "specs": {
+        "Diameter": "58 mm",
+        "Typ": "Bottenlös",
+        "Handtag": "Italiensk valnöt",
+        "Vikt": "480 g"
+      }
+    },
+    "steam": {
+      "title": "Artikulerad ångpip i koppar",
+      "description": "Ångrör i brunerad koppar med ergonomisk S-kurva. 360°-artikulerad led skyddad av cool-touch-tätning. Förkromad spets med fyra hål för mästarklass-mikroskum.",
+      "specs": {
+        "Rör-material": "Brunerad koppar",
+        "Artikulation": "360°",
+        "Spetshål": "4 riktade",
+        "Tätning": "Cool-touch"
+      }
+    },
+    "warmer": {
+      "title": "Koppvärmare i stål",
+      "description": "Övre yta i 304 rostfritt stålnät. Passivt uppvärmd av thermoblocket. Rymmer upp till 6 förvärmda espressokoppar.",
+      "specs": {
+        "Material": "AISI 304-stål",
+        "Mönster": "Diamantnät",
+        "Uppvärmning": "Passiv",
+        "Kapacitet": "6 koppar"
+      }
+    },
+    "drip": {
+      "title": "Droppbricka med stålgaller",
+      "description": "Avtagbar förstärkt matt ABS-skål med övre galler i rostfritt stål. Sicksackmönster optimerar dräneringen och underlättar rengöring.",
+      "specs": {
+        "Skålkapacitet": "0,5 L",
+        "Galler-material": "AISI 304",
+        "Mönster": "Sicksack",
+        "Diskmaskinssäker": "Ja"
+      }
+    }
+  },
+  "footer": {
+    "disclaimer": "Faktiska produktmått och funktioner kan variera. Priser kan ändras.",
+    "copyright": "© 2026 AURELIA Espresso Manifattura — Prototypvarumärke för mässdemonstration."
+  },
+  "colors": {
+    "nero": "Svart",
+    "rosso": "Röd",
+    "verde": "Grön",
+    "azzurro": "Ljusblå"
+  },
+  "colorSwitcher": {
+    "label": "Välj färg"
+  }
+}

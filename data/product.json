@@ -1,0 +1,43 @@
+{
+  "_comment": "Source of truth for product metadata not shown in the localised UI (which lives in messages/*.json). Keep `price_eur` aligned with messages/*.json `product.price`. Dimensions/materials align with the canonical brief at assets/refs/design-brief-2026-05-15.md.",
+  "id": "aurelia-pro-x1",
+  "name": "AURELIA Pro X1",
+  "category": "espresso-machine-prosumer",
+  "tagline": {
+    "it": "Il caffè, scolpito.",
+    "en": "Espresso, sculpted.",
+    "sv": "Espresso, skulpterad."
+  },
+  "subtitle": {
+    "it": "Macchina espresso prosumer dual boiler",
+    "en": "Prosumer dual-boiler espresso machine",
+    "sv": "Prosumer espressomaskin med dubbel kokare"
+  },
+  "origin": "Made in Italy",
+  "manufacturer": "AURELIA (brand fittizio — artigianale lombardo)",
+  "price_eur": 1290,
+  "specs": {
+    "dimensions_mm": {
+      "width": 220,
+      "height": 320,
+      "depth": 300
+    },
+    "weight_kg": 18,
+    "power_v": 230,
+    "power_w": 1700,
+    "water_supply": "serbatoio 3L estraibile dall'alto o allaccio diretto"
+  },
+  "materials": {
+    "body": "brushed anthracite steel with PVD bronze-black finish (warm copper undertone)",
+    "accents": "brushed copper (group head ring, gauge bezel, steam wand tube)",
+    "details": "walnut wood portafilter handle, chrome-mirror spouts",
+    "grilles": "stainless steel expanded-metal cup warmer + chevron drip tray"
+  },
+  "brand_palette": {
+    "deep_black": "#0A0A0A",
+    "burnished_copper": "#B87333",
+    "ivory_cream": "#F5F1E8",
+    "pure_white": "#FFFFFF",
+    "warm_gray": "#2A2622"
+  }
+}

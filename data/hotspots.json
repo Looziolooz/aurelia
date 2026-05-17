@@ -1,0 +1,93 @@
+{
+  "_comment": "Hotspots for the PBR procedural espresso machine (lib/espressoMachine.ts). Native units: W=2.05 D=2.85, total H≈3.75, base Y=0, centred X/Z. Coords from MACHINE_ANCHORS. camera_target = look-at, camera_position = fly-to (front-biased, ~4-5 units back). Tune via ?calibrate=1.",
+  "hotspots": [
+    {
+      "id": "h1-display",
+      "anchor_node": "display",
+      "fallback_position": "-0.40 3.23 1.47",
+      "fallback_normal": "0 0 1",
+      "camera_target": "-0.40 3.15 1.25",
+      "camera_position": "-0.40 3.45 5.20",
+      "icon": "monitor",
+      "i18nKey": "hotspot.display",
+      "order": 1
+    },
+    {
+      "id": "h2-gauge",
+      "anchor_node": "gauge",
+      "fallback_position": "0.60 3.23 1.49",
+      "fallback_normal": "0 0 1",
+      "camera_target": "0.60 3.18 1.30",
+      "camera_position": "2.00 3.55 4.70",
+      "icon": "gauge",
+      "i18nKey": "hotspot.gauge",
+      "order": 2
+    },
+    {
+      "id": "h3-buttons",
+      "anchor_node": "buttons",
+      "fallback_position": "-0.58 2.85 1.44",
+      "fallback_normal": "0 0 1",
+      "camera_target": "-0.55 2.80 1.25",
+      "camera_position": "-0.55 2.95 4.80",
+      "icon": "circle-dot",
+      "i18nKey": "hotspot.controls",
+      "order": 3
+    },
+    {
+      "id": "h4-group",
+      "anchor_node": "group",
+      "fallback_position": "0.00 2.30 1.13",
+      "fallback_normal": "0 0 1",
+      "camera_target": "0.00 2.25 0.95",
+      "camera_position": "-1.30 2.70 4.80",
+      "icon": "cog",
+      "i18nKey": "hotspot.group",
+      "order": 4
+    },
+    {
+      "id": "h5-portafilter",
+      "anchor_node": "portafilter",
+      "fallback_position": "-0.45 2.13 1.00",
+      "fallback_normal": "-0.7 0 0.7",
+      "camera_target": "-0.65 2.10 0.90",
+      "camera_position": "-3.90 2.70 4.10",
+      "icon": "coffee",
+      "i18nKey": "hotspot.portafilter",
+      "order": 5
+    },
+    {
+      "id": "h6-steam",
+      "anchor_node": "steam",
+      "fallback_position": "0.62 2.10 0.98",
+      "fallback_normal": "0.9 0 0.45",
+      "camera_target": "0.65 2.00 0.85",
+      "camera_position": "4.30 2.60 3.50",
+      "icon": "wind",
+      "i18nKey": "hotspot.steam",
+      "order": 6
+    },
+    {
+      "id": "h7-warmer",
+      "anchor_node": "warmer",
+      "fallback_position": "-0.21 3.77 0.00",
+      "fallback_normal": "0 1 0",
+      "camera_target": "-0.10 3.55 0.05",
+      "camera_position": "0.00 7.60 4.40",
+      "icon": "cup",
+      "i18nKey": "hotspot.warmer",
+      "order": 7
+    },
+    {
+      "id": "h8-tray",
+      "anchor_node": "tray",
+      "fallback_position": "0.00 0.51 1.15",
+      "fallback_normal": "0 0.5 0.85",
+      "camera_target": "0.00 0.60 1.00",
+      "camera_position": "0.40 2.40 5.00",
+      "icon": "droplet",
+      "i18nKey": "hotspot.drip",
+      "order": 8
+    }
+  ]
+}
