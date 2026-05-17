@@ -962,18 +962,19 @@ export function buildEspressoMachine(): THREE.Group {
   makeButton(-0.4, UY - 0.2, T.iconLight);
   makeButton(-0.16, UY - 0.2, T.iconCup);
 
-  // Group head — turned copper collar (rounded shoulder + front chamfer)
-  // instead of a plain squat cylinder, so it reads as a machined mass
-  // with depth, not a flat ring. Same Z extent as before (GH_Z-0.03 ..
-  // GH_Z+0.27) so every tuned anchor/position stays valid.
+  // Group head — turned copper collar with a CONTINUOUSLY CONVEX profile
+  // (radius swells to a max mid-height, curves back in at both ends): a
+  // rounded toroidal "bombato" mass, NOT a straight-walled barrel (the
+  // old profile had a flat 0.355 section → still read "piatto"). Same Z
+  // extent (GH_Z-0.03 .. GH_Z+0.27) so every tuned anchor stays valid.
   const ghProfile: [number, number][] = [
-    [0.2, 0.0], [0.33, 0.02], [0.355, 0.05], [0.355, 0.2],
-    [0.345, 0.255], [0.3, 0.29], [0.2, 0.3],
+    [0.24, 0.0], [0.3, 0.03], [0.315, 0.075], [0.318, 0.13],
+    [0.315, 0.185], [0.305, 0.235], [0.285, 0.27], [0.235, 0.3],
   ];
   const gho = new THREE.Mesh(
     new THREE.LatheGeometry(
       ghProfile.map(([r, h]) => new THREE.Vector2(r, h)),
-      48,
+      64,
     ),
     M.copperMatte,
   );
@@ -981,16 +982,53 @@ export function buildEspressoMachine(): THREE.Group {
   gho.position.set(0, GH_Y, GH_Z - 0.03);
   gho.castShadow = true;
   m.add(gho);
-  const gr = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.06, 48), M.copperBright);
-  gr.rotation.x = Math.PI / 2;
-  gr.position.set(0, GH_Y, GH_Z + 0.25);
+  // Polished copper highlight band — a rounded TORUS around the bulge,
+  // not a flat-faced disc. Collar axis is +Z (gho rotated), so a default
+  // torus (hole axis Z) wraps it with no rotation.
+  const gr = new THREE.Mesh(
+    new THREE.TorusGeometry(0.322, 0.02, 16, 64),
+    M.copperBright,
+  );
+  gr.position.set(0, GH_Y, GH_Z + 0.1);
   m.add(gr);
-  const grt = new THREE.Mesh(new THREE.CylinderGeometry(0.345, 0.345, 0.04, 48), M.copperBright);
-  grt.rotation.x = Math.PI / 2;
-  grt.position.set(0, GH_Y, GH_Z);
+  // Small bright fillet where the collar meets the black body.
+  const grt = new THREE.Mesh(
+    new THREE.TorusGeometry(0.255, 0.016, 14, 64),
+    M.copperBright,
+  );
+  grt.position.set(0, GH_Y, GH_Z - 0.02);
   m.add(grt);
-  const showerMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.018, 48), M.basket);
-  showerMesh.position.set(0, GH_Y - 0.16, GH_Z + 0.12);
+  // Copper enclosure — a CLOSED 360° shell. The profile curls back to a
+  // small radius at BOTH the top and the bottom, so it's a continuous
+  // copper dome around the screen/spout with no annular see-through gap
+  // ("la gonna deve essere completa e chiusa a 360 gradi"). Double-sided
+  // so a back-face never culls into a dark hole from below.
+  const copperShell = M.copperMatte.clone();
+  copperShell.side = THREE.DoubleSide;
+  const apronProfile: [number, number][] = [
+    // Wide copper cap raised +0.15 (decisive, not timid steps): covers
+    // out to r~0.34 at the top with only a small centre hole, then a
+    // wall down to the unchanged dome. Seals high against the group head,
+    // no annular gap. Lower dome (from [0.3,0.0] down) unchanged.
+    [0.075, 0.365], [0.18, 0.375], [0.27, 0.375], [0.32, 0.36],
+    [0.337, 0.32], [0.338, 0.25], [0.335, 0.17], [0.325, 0.09],
+    [0.31, 0.035], [0.3, 0.0],
+    [0.335, -0.04],
+    [0.33, -0.085], [0.3, -0.12], [0.24, -0.15], [0.16, -0.172],
+    [0.1, -0.185],
+  ];
+  const showerApron = new THREE.Mesh(
+    new THREE.LatheGeometry(
+      apronProfile.map(([r, y]) => new THREE.Vector2(r, y)),
+      64,
+    ),
+    copperShell,
+  );
+  showerApron.position.set(0, GH_Y - 0.02, GH_Z + 0.12);
+  showerApron.castShadow = true;
+  m.add(showerApron);
+  const showerMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.016, 48), M.basket);
+  showerMesh.position.set(0, GH_Y - 0.135, GH_Z + 0.12);
   m.add(showerMesh);
 
   // Portafilter
@@ -1000,6 +1038,17 @@ export function buildEspressoMachine(): THREE.Group {
   pfRing.rotation.x = Math.PI / 2;
   pfRing.position.y = 0.038;
   PF.add(pfRing);
+  // Polished stainless bayonet ridges for portafilter insertion (3 lugs
+  // around the steel body, "clearly visible" per the spec). M.steel =
+  // polished reflective stainless, contrasting the brushed copper above.
+  for (let i = 0; i < 3; i++) {
+    const lug = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.028, 0.075), M.steel);
+    lug.position.set(0.327, 0.004, 0);
+    const lp = new THREE.Group();
+    lp.add(lug);
+    lp.rotation.y = (i / 3) * Math.PI * 2 + Math.PI / 6;
+    PF.add(lp);
+  }
   const pfCup = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.23, 0.16, 48), M.chrome);
   pfCup.position.y = -0.12;
   PF.add(pfCup);
@@ -1030,40 +1079,96 @@ export function buildEspressoMachine(): THREE.Group {
   pfBasketRim.rotation.x = Math.PI / 2;
   pfBasketRim.position.y = -0.044;
   PF.add(pfBasketRim);
-  // Polished convex centre bullet (bottomless-PF spout pin) rising from
-  // the basket floor — the chrome dome dead-centre in the reference.
-  const pfBullet = new THREE.Mesh(
-    new THREE.SphereGeometry(0.055, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2),
+  // Bottomless-portafilter support spider: a 3-spoke chrome bracket with
+  // a centre hub, just above the mesh floor — what's dead centre in the
+  // top-view reference, not a plain dome.
+  const pfSpider = new THREE.Group();
+  pfSpider.add(
+    new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.05, 0.055, 24), M.chrome),
+  );
+  for (let i = 0; i < 3; i++) {
+    const arm = new THREE.Mesh(new THREE.BoxGeometry(0.185, 0.022, 0.05), M.chrome);
+    arm.position.x = 0.092;
+    const armPivot = new THREE.Group();
+    armPivot.add(arm);
+    armPivot.rotation.y = (i / 3) * Math.PI * 2;
+    pfSpider.add(armPivot);
+  }
+  pfSpider.position.y = -0.123;
+  PF.add(pfSpider);
+  // Twin pour spout: copper skirt (gonna) → chrome boss → two blade-like
+  // arms that sweep out then curve their tips back IN and down (the
+  // wishbone "horns" in the reference close-ups), not thin round tubes.
+  const pfSpout = new THREE.Group();
+  // Copper skirt where the spout meets the portafilter underside — the
+  // "gonna" that was missing.
+  const spoutSkirtProfile: [number, number][] = [
+    [0.05, 0.085], [0.085, 0.06], [0.108, 0.025], [0.11, 0.0],
+    [0.1, -0.022], [0.07, -0.04], [0.055, -0.05],
+  ];
+  const spoutSkirt = new THREE.Mesh(
+    new THREE.LatheGeometry(
+      spoutSkirtProfile.map(([r, y]) => new THREE.Vector2(r, y)),
+      48,
+    ),
+    copperShell,
+  );
+  pfSpout.add(spoutSkirt);
+  // Per the single-part photo: a central threaded boss + TWO mirrored
+  // concave crescent wings that splay out, drop, and curl the tip back
+  // up. M.chrome stays roughness 0.13 (not near-mirror): the codebase
+  // deliberately avoids near-mirror chrome — it boils under auto-rotation
+  // on the weak kiosk iGPU. High segment counts to kill the faceting
+  // ("ancora un po' pixelato").
+  const spoutBoss = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.092, 0.082, 0.14, 40),
     M.chrome,
   );
-  pfBullet.position.y = -0.12;
-  PF.add(pfBullet);
-  // Chrome chute: a tapered funnel under the basket feeding a short
-  // forward-curving spout with a lip ring — a protruding 3D part, not
-  // the old flat extruded plate that read "piatto".
-  const pfFunnel = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.16, 0.07, 0.13, 40),
-    M.chrome,
+  spoutBoss.position.y = -0.04;
+  spoutBoss.castShadow = true;
+  pfSpout.add(spoutBoss);
+  const spoutBore = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.052, 0.052, 0.13, 28, 1, true),
+    new THREE.MeshStandardMaterial({
+      color: 0x050506,
+      metalness: 0,
+      roughness: 0.95,
+      side: THREE.DoubleSide,
+    }),
   );
-  pfFunnel.position.y = -0.215;
-  PF.add(pfFunnel);
-  const chuteCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(0, -0.27, 0),
-    new THREE.Vector3(0, -0.32, 0.025),
-    new THREE.Vector3(0, -0.35, 0.075),
+  spoutBore.position.y = -0.035;
+  pfSpout.add(spoutBore);
+  // Concave crescent cross-section, swept along a planar horn path
+  // (X-Y plane → stable extrude frame). Built once, mirrored for the
+  // second wing via scale.x = -1.
+  const wingCross = new THREE.Shape();
+  wingCross.absarc(0, 0, 0.115, Math.PI * 1.16, Math.PI * 1.84, false);
+  wingCross.absarc(0, 0, 0.084, Math.PI * 1.84, Math.PI * 1.16, true);
+  wingCross.closePath();
+  // Flatter than before — "meno curvato verso il basso": splays out
+  // more, plunges less (max depth ~-0.23 instead of -0.36), gentler tip.
+  const wingPath = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0.025, -0.05, 0),
+    new THREE.Vector3(0.105, -0.075, 0),
+    new THREE.Vector3(0.175, -0.115, 0),
+    new THREE.Vector3(0.21, -0.165, 0),
+    new THREE.Vector3(0.205, -0.205, 0),
+    new THREE.Vector3(0.175, -0.23, 0),
   ]);
-  const pfChute = new THREE.Mesh(
-    new THREE.TubeGeometry(chuteCurve, 24, 0.05, 20, false),
-    M.chrome,
-  );
-  PF.add(pfChute);
-  const pfChuteLip = new THREE.Mesh(
-    new THREE.TorusGeometry(0.05, 0.012, 12, 24),
-    M.chrome,
-  );
-  pfChuteLip.position.set(0, -0.35, 0.075);
-  pfChuteLip.rotation.x = Math.PI / 2;
-  PF.add(pfChuteLip);
+  const wingGeo = new THREE.ExtrudeGeometry(wingCross, {
+    steps: 96,
+    curveSegments: 24,
+    bevelEnabled: false,
+    extrudePath: wingPath,
+  });
+  for (const s of [-1, 1] as const) {
+    const wing = new THREE.Mesh(wingGeo, M.chrome);
+    wing.scale.x = s;
+    wing.castShadow = true;
+    pfSpout.add(wing);
+  }
+  pfSpout.position.y = -0.2;
+  PF.add(pfSpout);
   // Chrome stem bridging the portafilter body to the walnut handle. Was
   // length 0.1 ending at x≈-0.37 while the handle base sits at x≈-0.62 →
   // the handle floated with a ~0.25 gap ("manico sospeso nel vuoto").
@@ -1187,6 +1292,90 @@ export function buildEspressoMachine(): THREE.Group {
     [0.22, HB + 0.18, BZ - 0.028],
     [Math.PI / 2, 0, 0],
   );
+
+  // Two white ceramic espresso cups on the drip-tray grate, flanking
+  // centre ("due tazze bianche ai lati"). Dedicated white material (not
+  // M.body) so they stay white through the Smeg colour switcher.
+  const ceramic = new THREE.MeshStandardMaterial({
+    color: 0xf1efe9,
+    metalness: 0.0,
+    roughness: 0.32,
+    envMapIntensity: 0.6,
+  });
+  // Stackable espresso cup (per the reference): rounded narrow base →
+  // step → wider upper cylinder → rim, hollow interior. White ceramic.
+  const cupProfile: [number, number][] = [
+    [0.0, 0.0], [0.085, 0.0], [0.092, 0.022], [0.105, 0.05],
+    [0.135, 0.115], [0.128, 0.155], [0.118, 0.182], [0.178, 0.205],
+    [0.197, 0.3], [0.204, 0.43], [0.206, 0.46], [0.19, 0.452],
+    [0.178, 0.34], [0.158, 0.21], [0.1, 0.085], [0.0, 0.1],
+  ];
+  const cupGeo = new THREE.LatheGeometry(
+    cupProfile.map(([r, y]) => new THREE.Vector2(r, y)),
+    64,
+  );
+  // Colour band — material is M.body, so the build-time smegBody tagging
+  // below recolours it with the machine: green machine → green cups.
+  const cupBandGeo = new THREE.CylinderGeometry(0.206, 0.206, 0.19, 48, 1, true);
+  // "AURELIA" wordmark on a transparent canvas → a curved decal that
+  // stays white over the colour band (separate mesh, NOT M.body, so the
+  // Smeg switcher never recolours the text).
+  const logoC = document.createElement("canvas");
+  logoC.width = 512;
+  logoC.height = 128;
+  const lx = logoC.getContext("2d")!;
+  lx.clearRect(0, 0, 512, 128);
+  lx.fillStyle = "#ffffff";
+  lx.font = "600 66px Georgia, 'Times New Roman', serif";
+  lx.textAlign = "center";
+  lx.textBaseline = "middle";
+  lx.fillText("A U R E L I A", 256, 70);
+  const cupLogoTex = new THREE.CanvasTexture(logoC);
+  cupLogoTex.colorSpace = THREE.SRGBColorSpace;
+  // Read left-to-right on the cup exterior (no repeat/offset mirror).
+  const cupLogoMat = new THREE.MeshStandardMaterial({
+    map: cupLogoTex,
+    transparent: true,
+    metalness: 0,
+    roughness: 0.45,
+  });
+  // Arc centred on +Z (front, toward the viewer): THREE cylinder theta=0
+  // is +Z, so thetaStart -arc/2 centres it.
+  const cupLogoGeo = new THREE.CylinderGeometry(
+    0.209, 0.209, 0.085, 48, 1, true, -0.62, 1.24,
+  );
+  const trayTopY = GRATE_Y + 0.016;
+  ([-1, 1] as const).forEach((sx) => {
+    const cup = new THREE.Group();
+    const body = new THREE.Mesh(cupGeo, ceramic);
+    body.castShadow = body.receiveShadow = true;
+    cup.add(body);
+    const band = new THREE.Mesh(cupBandGeo, M.body);
+    band.position.y = 0.305;
+    cup.add(band);
+    const logo = new THREE.Mesh(cupLogoGeo, cupLogoMat);
+    logo.position.y = 0.315;
+    if (sx < 0) logo.rotation.y = Math.PI; // keep "AURELIA" facing front
+    cup.add(logo);
+    // Deterministic C-handle: a tube along a curve embedded into the cup
+    // wall top and bottom (white ceramic, like the reference handle).
+    const handleCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(0.19, 0.4, 0),
+      new THREE.Vector3(0.285, 0.385, 0),
+      new THREE.Vector3(0.31, 0.305, 0),
+      new THREE.Vector3(0.285, 0.225, 0),
+      new THREE.Vector3(0.19, 0.215, 0),
+    ]);
+    const handle = new THREE.Mesh(
+      new THREE.TubeGeometry(handleCurve, 28, 0.016, 12, false),
+      ceramic,
+    );
+    handle.castShadow = true;
+    cup.add(handle);
+    if (sx < 0) cup.rotation.y = Math.PI;
+    cup.position.set(sx * 0.25, trayTopY, GRATE_Z + 0.04);
+    m.add(cup);
+  });
 
   // Center on X/Z, base to Y=0.
   const bbox = new THREE.Box3().setFromObject(m);
