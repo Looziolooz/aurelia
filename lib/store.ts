@@ -12,11 +12,9 @@ interface TotemState {
 
   // Onboarding gate. The first-load IntroOverlay (render backdrop →
   // language choice) owns the screen until the visitor picks a language;
-  // `introDone` flips true then. Reset to false on idle so the NEXT fair
-  // visitor gets the full onboarding again (a new person may want a
-  // different language). AttractorOverlay's global tap-to-dismiss is
-  // gated on this so a stray tap during the intro can't skip the
-  // language step.
+  // `introDone` flips true then (IntroOverlay calls enterActive() on
+  // pick). Reset to false on idle so the NEXT fair visitor gets the full
+  // onboarding again (a new person may want a different language).
   introDone: boolean;
   // Mirrors ProductCanvas' model-ready signal into the store so the
   // IntroOverlay can hold its elegant render backdrop until the heavy

@@ -17,13 +17,15 @@
  *      kiosk GPU) we hold the elegant render backdrop until it is —
  *      never a bare loading dot.
  *
- * Architecture: deliberately NOT a new store phase. AttractorOverlay
- * keeps mounting under `phase==="attractor"` exactly as before (the
- * FASE-7 reduced-motion regression guard stays valid); this layer sits
- * above it (z 75, between attractor=70 and the global grain=80) and owns
- * interaction until `introDone`. On 60 s idle the store resets
- * `introDone=false` so the next fair visitor gets the full onboarding
- * again (model already built → instant reveal).
+ * Architecture: this REPLACES the old AttractorOverlay (the
+ * scene-cycling text hero), which visually overlapped this layer when
+ * both were mounted. No new store phase: it shows while
+ * `phase==="attractor" && !introDone` (the initial state), z 75 (above
+ * the z-attractor=70 token, below the global grain=80), and owns
+ * interaction until the visitor picks a language. On 60 s idle the
+ * store resets `introDone=false` so the next fair visitor gets the full
+ * onboarding again (model already built → instant reveal). The FASE-7
+ * reduced-motion guard moved to this component (tests/e2e).
  *
  * Brand (DESIGN.md, LOCKED): copper only as keyline/border never as text
  * (G3); panel radius ≤ 8 px (G1); no extra noise layer (G9 — the global
@@ -233,8 +235,9 @@ export function IntroOverlay() {
         />
       ))}
 
-      {/* Same functional legibility scrim AttractorOverlay uses (not a
-       *  decorative gradient — G2 ok). */}
+      {/* Functional legibility scrim (the same proven gradient the old
+       *  attractor used) — keeps the card/text readable over both the
+       *  dark body and the bright floor. Not a decorative gradient (G2). */}
       <div
         aria-hidden
         className="absolute inset-0"
