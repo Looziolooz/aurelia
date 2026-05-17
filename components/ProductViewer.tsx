@@ -800,20 +800,16 @@ function ProductCanvas() {
   const [ready, setReady] = useState(false);
   const [effectsReady, setEffectsReady] = useState(false);
   const [modelReady, setModelReady] = useState(false);
-  // Kiosk safety net (FINDING-002, design-review 2026-05-17 — Lorenzo
-  // chose strategy A). UNIFIED context-loss recovery: degrade in place,
-  // do NOT remount. On `webglcontextlost` we (1) drop the expensive
-  // clearcoat material via applyEmergencyDegrade() [ProductModel
-  // listener] and (2) preventDefault so the browser keeps the context
-  // restorable, showing the neutral loading overlay during the gap; the
-  // browser then fires `webglcontextrestored` and three re-uploads into
-  // the now-lighter shader. The old key-bump remount was removed: it
-  // re-ran buildEspressoMachine() + procedural texture synthesis on
-  // recovery — the exact GPU-heavy op the "WebGL GPU budget ceiling"
-  // memory names as the CAUSE of context loss on the weak kiosk iGPU,
-  // i.e. a loss→remount→loss white-screen loop. Degrade-in-place is the
-  // memory-aligned survival path (zero new heavy work on recovery).
+  // Kiosk safety net. If the GPU drops the WebGL context (driver reset,
+  // memory pressure, weak iGPU) the canvas would otherwise stay frozen
+  // until something remounts it — that was the "static frozen image →
+  // change language → 3D reappears" bug (the locale route change was the
+  // accidental remount). We now SELF-RECOVER: on context loss we bump a
+  // key to remount the Canvas, which creates a fresh GL context
+  // automatically. While that ~350 ms gap is open we show the neutral
+  // loading indicator, never a frozen product still.
   const [contextLost, setContextLost] = useState(false);
+  const [glKey, setGlKey] = useState(0);
 
   useEffect(() => {
     setReady(true);
@@ -845,6 +841,7 @@ function ProductCanvas() {
     >
       {ready && (
         <Canvas
+          key={glKey}
           shadows={false}
           // dpr cap 3→1.75. At dpr 3 on a 1440px-wide kiosk the backbuffer
           // is ~4320px wide; every post/reflector/shadow FBO is allocated
@@ -885,13 +882,12 @@ function ProductCanvas() {
             canvas.addEventListener(
               "webglcontextlost",
               (e) => {
-                // preventDefault keeps the context restorable so the
-                // browser can fire `webglcontextrestored` and three
-                // re-uploads into the degraded (lighter) material set by
-                // the ProductModel applyEmergencyDegrade() listener. No
-                // remount — see the UNIFIED recovery note above.
+                // preventDefault keeps the context restorable, then we
+                // force a clean remount so it self-heals without needing
+                // a route change.
                 e.preventDefault();
                 setContextLost(true);
+                window.setTimeout(() => setGlKey((k) => k + 1), 350);
               },
               false,
             );
