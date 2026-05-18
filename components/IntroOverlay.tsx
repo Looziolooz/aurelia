@@ -45,26 +45,26 @@ import { useTotemStore } from "@/lib/store";
 
 const LANG_DELAY_S = 5;
 
-// Brand hero set. Order = a believable hero arc: front → 3⁄4 → side →
-// detail (closing macro beat).
+// Brand hero set — Lorenzo's approved AURELIA Pro X1 product renders
+// (nero + rame, the locked brand identity; dark studio, matches the
+// intro scrim). Order = a believable hero arc: front → 3⁄4 right → 3⁄4
+// left → 3⁄4 left close (the held beat before the language card).
 //
-// The previous `/intro/render_*.png` were the coffee-machine Blender
-// pipeline's output — byte-identical to assets/3d/coffee-machine/renders/,
-// which is a crude empty box, NOT the AURELIA (documented geometry limit +
-// copper/chrome-bake-black bug). Wrong product on the first frame the fair
-// visitor sees; removed. We now use the espresso Cycles render set
-// (assets/3d/espresso → scripts/optimize-renders.mjs → public/renders/
-// espresso_*.webp), mirrored into /public/intro/.
+// History: the original `/intro/render_*.png` were the coffee-machine
+// Blender pipeline output — byte-identical to assets/3d/coffee-machine/
+// renders/, a crude empty box, NOT the AURELIA (documented geometry
+// limit + copper/chrome-bake-black bug). An espresso-set interim
+// followed; both superseded by these.
 //
 // Path note: these MUST stay under `/intro/`. The FASE-7 reduced-motion
-// regression test (tests/e2e/reduced-motion.spec.ts) selects the backdrop
-// slides by `div[style*='/intro/']`. Do not repoint to /renders/ without
-// updating that test.
+// regression test (tests/e2e/reduced-motion.spec.ts) selects the
+// backdrop slides by `div[style*='/intro/']`. Do not move them out of
+// /intro/ without updating that test.
 const INTRO_RENDERS = [
-  "/intro/espresso_front.webp",
-  "/intro/espresso_three_q.webp",
-  "/intro/espresso_side.webp",
-  "/intro/espresso_detail.webp",
+  "/intro/aurelia_front.png",
+  "/intro/aurelia_3q_right.png",
+  "/intro/aurelia_3q_left.png",
+  "/intro/aurelia_3q_left_close.png",
 ] as const;
 
 const LOCALE_NAME: Record<Locale, string> = {
@@ -232,6 +232,21 @@ export function IntroOverlay() {
       style={{ zIndex: 75 }}
       suppressHydrationWarning
     >
+      {/* Explicit preload — this IS the "pre-caricamento": the hero
+       *  frames are fetched the instant the page is alive (before the
+       *  heavy R3F model) so the backdrop paints at T=0 with no flash.
+       *  React 19 hoists rel=preload <link> to <head>; the first frame
+       *  gets high priority (it's the one shown first). */}
+      {INTRO_RENDERS.map((src, i) => (
+        <link
+          key={`preload-${src}`}
+          rel="preload"
+          as="image"
+          href={src}
+          fetchPriority={i === 0 ? "high" : "low"}
+        />
+      ))}
+
       {/* Render backdrop (CSS background-image divs — no <img>, so no
        *  no-img-element lint and no next/image wrapper). */}
       {INTRO_RENDERS.map((src, i) => (
