@@ -45,15 +45,26 @@ import { useTotemStore } from "@/lib/store";
 
 const LANG_DELAY_S = 5;
 
-// Brand hero set (copied to /public/intro/). Order = a believable slow
-// turn front → 3⁄4 → side → 3⁄4. The social-video package designates
-// exactly these 4 as the hero renders (no _live_* scratch, no stale
-// render_side).
+// Brand hero set. Order = a believable hero arc: front → 3⁄4 → side →
+// detail (closing macro beat).
+//
+// The previous `/intro/render_*.png` were the coffee-machine Blender
+// pipeline's output — byte-identical to assets/3d/coffee-machine/renders/,
+// which is a crude empty box, NOT the AURELIA (documented geometry limit +
+// copper/chrome-bake-black bug). Wrong product on the first frame the fair
+// visitor sees; removed. We now use the espresso Cycles render set
+// (assets/3d/espresso → scripts/optimize-renders.mjs → public/renders/
+// espresso_*.webp), mirrored into /public/intro/.
+//
+// Path note: these MUST stay under `/intro/`. The FASE-7 reduced-motion
+// regression test (tests/e2e/reduced-motion.spec.ts) selects the backdrop
+// slides by `div[style*='/intro/']`. Do not repoint to /renders/ without
+// updating that test.
 const INTRO_RENDERS = [
-  "/intro/render_front.png",
-  "/intro/render_3q_right.png",
-  "/intro/render_side_right.png",
-  "/intro/render_3q_left.png",
+  "/intro/espresso_front.webp",
+  "/intro/espresso_three_q.webp",
+  "/intro/espresso_side.webp",
+  "/intro/espresso_detail.webp",
 ] as const;
 
 const LOCALE_NAME: Record<Locale, string> = {
