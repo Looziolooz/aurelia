@@ -1,7 +1,13 @@
 import { create } from "zustand";
 import { type SmegColorId, DEFAULT_COLOR } from "./smegVariants";
 
-export type TotemPhase = "attractor" | "active" | "detail";
+// "intro" — the first-load cinematic (IntroCinematic) owns the screen and
+// auto-plays the brand cold-open while the heavy R3F model builds behind
+// it. It is NOT a language gate (decision 2026-05-18): it auto-resolves
+// to "active" when the film ends AND the model is ready, or instantly on
+// a tap-to-skip. On 60 s idle the kiosk resets to "intro" so the film
+// replays as the attractor for the next fair visitor.
+export type TotemPhase = "intro" | "active" | "detail";
 
 interface TotemState {
   phase: TotemPhase;
@@ -10,46 +16,41 @@ interface TotemState {
   pickerOpen: boolean;
   inquiryOpen: boolean;
 
-  // Onboarding gate. The first-load IntroOverlay (render backdrop →
-  // language choice) owns the screen until the visitor picks a language;
-  // `introDone` flips true then (IntroOverlay calls enterActive() on
-  // pick). Reset to false on idle so the NEXT fair visitor gets the full
-  // onboarding again (a new person may want a different language).
-  introDone: boolean;
-  // Mirrors ProductCanvas' model-ready signal into the store so the
-  // IntroOverlay can hold its elegant render backdrop until the heavy
-  // model is actually on screen (never reveal a bare loading dot). Stays
-  // true across idle resets — once built the model is still there.
+  // Mirrors ProductCanvas' model-ready signal into the store. The
+  // cinematic holds its final hero frame until this is true, so we never
+  // hand off to a bare loading dot. Stays true across idle resets — once
+  // built the model is still there, so the replayed film reveals instantly.
   modelReady: boolean;
 
   // Smeg-inspired colour (glossy enamel only). Persisted across idle
   // reset on purpose: it's a deliberate visitor choice, not session noise.
   colorVariant: SmegColorId;
 
+  // Called by IntroCinematic when the film resolves (end-of-timeline with
+  // the model ready, or a tap-to-skip). Only transitions out of "intro"
+  // so it can never clobber an open "detail" panel.
   enterActive: () => void;
   openHotspot: (id: string) => void;
   closeHotspot: () => void;
-  resetToAttractor: () => void;
+  resetIdle: () => void;
   setPickerOpen: (open: boolean) => void;
   setInquiryOpen: (open: boolean) => void;
   setColorVariant: (id: SmegColorId) => void;
-  setIntroDone: (done: boolean) => void;
   setModelReady: (ready: boolean) => void;
 }
 
 export const useTotemStore = create<TotemState>((set) => ({
-  phase: "attractor",
+  phase: "intro",
   activeHotspotId: null,
   visitedHotspots: new Set<string>(),
   pickerOpen: false,
   inquiryOpen: false,
-  introDone: false,
   modelReady: false,
   colorVariant: DEFAULT_COLOR,
 
   enterActive: () =>
     set((state) =>
-      state.phase === "attractor" ? { phase: "active" } : state,
+      state.phase === "intro" ? { phase: "active" } : state,
     ),
 
   openHotspot: (id) =>
@@ -66,22 +67,20 @@ export const useTotemStore = create<TotemState>((set) => ({
   closeHotspot: () =>
     set({ phase: "active", activeHotspotId: null }),
 
-  resetToAttractor: () =>
+  resetIdle: () =>
     set({
-      phase: "attractor",
+      // New fair visitor → replay the brand cinematic as the attractor.
+      phase: "intro",
       activeHotspotId: null,
       visitedHotspots: new Set<string>(),
       pickerOpen: false,
       inquiryOpen: false,
-      // New visitor at the kiosk → full onboarding again (incl. language).
       // modelReady is deliberately NOT reset: the model stays built, so
-      // the re-shown intro reveals instantly.
-      introDone: false,
+      // the replayed film hands off the instant its timeline ends.
     }),
 
   setPickerOpen: (open) => set({ pickerOpen: open }),
   setInquiryOpen: (open) => set({ inquiryOpen: open }),
   setColorVariant: (id) => set({ colorVariant: id }),
-  setIntroDone: (done) => set({ introDone: done }),
   setModelReady: (ready) => set({ modelReady: ready }),
 }));

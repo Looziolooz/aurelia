@@ -50,6 +50,13 @@ export default function RootLayout({
       className={`${cormorant.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        {/* Aggressive asset prefetch — HDR env map is the only external asset
+          * (the espresso machine is procedural, no GLB). Starts the fetch at
+          * T=0, before React hydration, so drei's Environment component finds
+          * it cached when the Canvas mounts. */}
+        <link rel="preload" as="fetch" href="/hdr/studio_small_03_1k.hdr" crossOrigin="anonymous" />
+      </head>
       <body
         className="min-h-screen overflow-hidden bg-canvas font-body text-cream-100"
         suppressHydrationWarning

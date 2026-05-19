@@ -37,7 +37,15 @@
     "tapGesture": "Tap",
     "rotateGesture": "Rotate",
     "pinchGesture": "Zoom",
-    "ar": "View in AR"
+    "ar": "View in AR",
+    "intro": {
+      "chooseLanguage": "Choose your language",
+      "starting": "Starting",
+      "loadingGeometry": "Preparing geometry…",
+      "loadingMaterials": "Preparing materials…",
+      "almostReady": "Almost ready…",
+      "tapHint": "Tap to explore"
+    }
   },
   "a11y": {
     "hotspotCount": "Hotspot {current} of {total}",

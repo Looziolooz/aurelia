@@ -754,7 +754,6 @@ function Scene({
   onModelReady?: () => void;
 }) {
   const phase = useTotemStore((s) => s.phase);
-  const isAttractor = phase === "attractor";
   const isDetail = phase === "detail";
 
   return (
@@ -834,7 +833,7 @@ function Scene({
         color="#050302"
       />
 
-      <CameraRig active={isAttractor} detail={isDetail} />
+      <CameraRig active detail={isDetail} />
     </>
   );
 }
@@ -947,8 +946,6 @@ function ProductCanvas() {
             onModelReady={() => {
               setEffectsReady(true);
               setModelReady(true);
-              // Mirror into the store so IntroOverlay can hold its
-              // render backdrop until the heavy model is actually here.
               useTotemStore.getState().setModelReady(true);
             }}
           />

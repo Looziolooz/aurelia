@@ -37,7 +37,15 @@
     "tapGesture": "Tocca",
     "rotateGesture": "Ruota",
     "pinchGesture": "Zoom",
-    "ar": "Vedi in AR"
+    "ar": "Vedi in AR",
+    "intro": {
+      "chooseLanguage": "Scegli la lingua",
+      "starting": "Avvio",
+      "loadingGeometry": "Preparazione geometria…",
+      "loadingMaterials": "Preparazione materiali…",
+      "almostReady": "Quasi pronto…",
+      "tapHint": "Tocca per esplorare"
+    }
   },
   "a11y": {
     "hotspotCount": "Punto di interesse {current} di {total}",

@@ -6,11 +6,13 @@ import { test, expect } from "@playwright/test";
  * Two GSAP-driven motion paths must honour `prefers-reduced-motion: reduce`
  * (the CSS @media guard does NOT stop JS-scheduled tweens):
  *
- *   1. IntroOverlay (first-load onboarding — replaced the old
- *      AttractorOverlay). In `reduce` it must show ONLY the first render
- *      slide (static, autoAlpha:1), must NOT cross-fade-loop the backdrop,
- *      and the language card must appear IMMEDIATELY (the 5 s delay is
- *      bypassed — the whole point of reduced-motion is no animated wait).
+ *   1. IntroCinematic (first-load brand cold-open — replaced the old
+ *      IntroOverlay language gate; decision 2026-05-18: it auto-plays,
+ *      it is NOT a gate). In `reduce` it must show ONLY the first hero
+ *      render slide (static, autoAlpha:1), must NOT cross-fade-loop the
+ *      backdrop, and the brand type must be shown IMMEDIATELY (no
+ *      animated cold-open wait — the whole point of reduced-motion). It
+ *      then auto-resolves to "active" as soon as the model is ready.
  *   2. HotspotPanel — reads `window.matchMedia('(prefers-reduced-motion:
  *      reduce)')` and collapses the open/close tween to `duration: 0`, so the
  *      panel reaches its final transform immediately (no slide/blur gating).
@@ -25,10 +27,10 @@ import { test, expect } from "@playwright/test";
  * The host runs concurrent heavy CPU work (Blender render), so timeouts are
  * deliberately generous; the assertions test *behaviour*, not wall-clock.
  *
- * History: the old AttractorOverlay scene-cycling / breathing test was
- * retired when IntroOverlay replaced that component (the render-backdrop
- * onboarding). The reduced-motion guarantee it protected now lives in the
- * IntroOverlay test below — same "settle then stay settled" method.
+ * History: the old AttractorOverlay scene-cycling test → the IntroOverlay
+ * language-gate test → this IntroCinematic test. Same reduced-motion
+ * guarantee throughout ("settle then stay settled"); only the component
+ * that owns first-load motion changed.
  */
 test.slow();
 
@@ -36,19 +38,16 @@ async function forceReducedMotion(page: import("@playwright/test").Page) {
   await page.emulateMedia({ reducedMotion: "reduce" });
 }
 
-// First-load onboarding (IntroOverlay) gates entry: the visitor must pick
-// a language to start. Under reduced-motion the language card is shown
-// immediately (no 5 s wait). Picking holds the render backdrop until the
-// model is ready, then fades (~0.5 s) and enterActive() fires — so we wait
-// for the intro dialog to DETACH (generous timeout: the host runs
+// First-load is the auto-playing brand cinematic — NOT a gate, no
+// interaction. Under reduced-motion it shows a static hero still + the
+// brand type at once, then auto-resolves the instant the R3F model is
+// ready: it fades out and enterActive() fires. So "starting" just means
+// waiting for the cinematic to DETACH (generous timeout: the host runs
 // concurrent heavy CPU work and the R3F model build is slow).
 async function startViaIntro(page: import("@playwright/test").Page) {
-  const introLang = page.getByRole("button", { name: "Italiano" });
-  await introLang.waitFor({ state: "visible", timeout: 30_000 });
-  await introLang.click();
-  await page
-    .getByRole("dialog", { name: /Choose your language/i })
-    .waitFor({ state: "detached", timeout: 90_000 });
+  const intro = page.getByTestId("intro-cinematic");
+  await intro.waitFor({ state: "visible", timeout: 30_000 });
+  await intro.waitFor({ state: "detached", timeout: 90_000 });
 }
 
 test.describe("prefers-reduced-motion respected (FASE 7 BLOCKER regression)", () => {
@@ -90,71 +89,72 @@ test.describe("prefers-reduced-motion respected (FASE 7 BLOCKER regression)", ()
     ).toBe(true);
   });
 
-  test("intro overlay: static render + immediate card, no crossfade loop", async ({
+  test("intro cinematic: single static render, brand type immediate, no crossfade loop", async ({
     page,
   }) => {
     test.setTimeout(120_000);
     await forceReducedMotion(page);
     await page.goto("/it");
 
-    const intro = page.getByRole("dialog", {
-      name: /Choose your language/i,
-    });
+    const intro = page.getByTestId("intro-cinematic");
     await expect(intro).toBeVisible({ timeout: 20_000 });
 
-    // Under reduced-motion the card must appear immediately (the 5 s
-    // delay is bypassed) — the whole point is no animated wait.
-    await expect(
-      page.getByRole("button", { name: "Italiano" }),
-    ).toBeVisible({ timeout: 8_000 });
+    // Under reduced-motion the brand type must be shown IMMEDIATELY (the
+    // animated cold-open is skipped) — the whole point is no animated wait.
+    await expect(intro.getByText("AURELIA", { exact: true })).toBeVisible({
+      timeout: 8_000,
+    });
 
-    // The backdrop render slides must NOT keep cross-fading: in
-    // reduced-motion only the first is shown (autoAlpha 1), the rest
-    // stay hidden (autoAlpha 0), and it stays that way across a window
-    // longer than one crossfade cycle. A leaked infinite timeline would
-    // oscillate the opacities; this catches it ("settle then stay
-    // settled").
+    // The hero render slides must NOT keep cross-fading: in reduced-motion
+    // only the first is shown (autoAlpha 1); every other slide must stay
+    // hidden (autoAlpha ~0) for the entire visible lifetime of the layer.
+    // A leaked infinite timeline independently sweeps a LATER slide 0→1
+    // while the first drops — that is the signal we forbid. The clean
+    // auto-resolve fades the WHOLE layer together (first slide drops too,
+    // later slides never rise), so we sample until the layer detaches and
+    // assert on the should-be-hidden slides only (robust to auto-resolve,
+    // still precisely catches a leaked crossfade loop).
     const result = await page.evaluate(async () => {
-      const root = document.querySelector<HTMLElement>('[role="dialog"]');
+      const root = document.querySelector<HTMLElement>(
+        '[data-testid="intro-cinematic"]',
+      );
       if (!root) return null;
       const slides = Array.from(
         root.querySelectorAll<HTMLElement>("div[style*='/intro/']"),
       );
       if (slides.length < 2) return null;
       const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
-      const opacities: number[][] = [];
-      for (let i = 0; i < 10; i++) {
-        opacities.push(
-          slides.map((el) => parseFloat(getComputedStyle(el).opacity)),
+      const firstMax: number[] = [];
+      const laterMax: number[] = [];
+      for (let i = 0; i < 16; i++) {
+        if (!document.body.contains(slides[0])) break; // resolved & detached
+        const op = slides.map((el) =>
+          parseFloat(getComputedStyle(el).opacity),
         );
-        await wait(450);
+        firstMax.push(op[0]);
+        laterMax.push(Math.max(...op.slice(1)));
+        await wait(400);
       }
-      const maxPer = slides.map((_, idx) =>
-        Math.max(...opacities.map((row) => row[idx])),
-      );
-      const minPer = slides.map((_, idx) =>
-        Math.min(...opacities.map((row) => row[idx])),
-      );
-      const spreadPer = maxPer.map((mx, idx) => mx - minPer[idx]);
-      return { count: slides.length, maxPer, spreadPer };
+      return {
+        count: slides.length,
+        samples: firstMax.length,
+        firstPeak: firstMax.length ? Math.max(...firstMax) : 0,
+        laterPeak: laterMax.length ? Math.max(...laterMax) : 0,
+      };
     });
 
     expect(result, "intro backdrop slides must be present").not.toBeNull();
-    // Exactly one slide visible (the first), all others hidden.
-    expect(result!.maxPer[0]).toBeGreaterThan(0.9);
-    for (let i = 1; i < result!.count; i++) {
-      expect(
-        result!.maxPer[i],
-        `slide ${i} must never fade in under reduced-motion`,
-      ).toBeLessThan(0.1);
-    }
-    // No oscillation on any slide over the sampled window (a leaked
-    // crossfade loop sweeps 0→1; flat means no loop).
-    for (let i = 0; i < result!.count; i++) {
-      expect(
-        result!.spreadPer[i],
-        `slide ${i} opacity must not oscillate (no crossfade loop)`,
-      ).toBeLessThan(0.06);
-    }
+    expect(
+      result!.samples,
+      "should observe the cinematic for at least one sample",
+    ).toBeGreaterThan(0);
+    // The first slide is the (only) visible hero still.
+    expect(result!.firstPeak).toBeGreaterThan(0.9);
+    // No later slide ever fades in — the discriminating signal for a
+    // leaked reduced-motion crossfade loop.
+    expect(
+      result!.laterPeak,
+      "no later slide may fade in under reduced-motion (no crossfade loop)",
+    ).toBeLessThan(0.1);
   });
 });

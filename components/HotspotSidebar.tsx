@@ -77,9 +77,6 @@ export function HotspotSidebar() {
     return () => document.removeEventListener("keydown", onKey);
   }, [phase, closeHotspot]);
 
-  // Hide the rail while the attractor overlay is up — it owns the screen.
-  if (phase === "attractor") return null;
-
   return (
     <nav
       aria-label={t("ui.features")}

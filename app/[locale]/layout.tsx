@@ -5,6 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { LocaleHtmlLangSync } from "@/components/LocaleHtmlLangSync";
 import { IdleResetProvider } from "@/components/IdleResetProvider";
 import { ProductViewer } from "@/components/ProductViewer";
+import { IntroCinematic } from "@/components/IntroCinematic";
 
 type LocaleLayoutProps = {
   children: React.ReactNode;
@@ -36,6 +37,11 @@ export default async function LocaleLayout({
          *  expensive to re-mount and the GLB has to re-parse on every
          *  language toggle if mounted in the page. */}
         <ProductViewer />
+        {/* Brand cold-open. In the layout (not the page) so it survives
+         *  locale switches and is always present to replay as the
+         *  attractor when the store resets phase → "intro" on idle.
+         *  GPU-free: it plays while the R3F model builds behind it. */}
+        <IntroCinematic />
         <IdleResetProvider>{children}</IdleResetProvider>
       </main>
     </NextIntlClientProvider>

@@ -185,14 +185,13 @@ export function InfoRequestModal() {
   );
 }
 
-/** Small CTA pinned bottom-center that opens the modal. Hidden in attractor. */
+/** Small CTA pinned bottom-center that opens the modal. */
 export function InquiryCta() {
   const t = useTranslations("inquiry");
-  const phase = useTotemStore((s) => s.phase);
   const inquiryOpen = useTotemStore((s) => s.inquiryOpen);
   const setOpen = useTotemStore((s) => s.setInquiryOpen);
 
-  if (phase === "attractor" || inquiryOpen) return null;
+  if (inquiryOpen) return null;
 
   return (
     <button

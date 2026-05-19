@@ -21,13 +21,8 @@ export function ColorVariantSwitcher() {
   const tColors = useTranslations("colors");
   const tSwitcher = useTranslations("colorSwitcher");
 
-  const phase = useTotemStore((s) => s.phase);
   const colorVariant = useTotemStore((s) => s.colorVariant);
   const setColorVariant = useTotemStore((s) => s.setColorVariant);
-
-  // Must not overlay the opening: hidden until the first click promotes
-  // the totem out of the attractor (mirrors HotspotSidebar).
-  if (phase === "attractor") return null;
 
   return (
     <nav

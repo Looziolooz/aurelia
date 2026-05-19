@@ -1,7 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { LanguagePicker } from "@/components/LanguagePicker";
 import { ColorVariantSwitcher } from "@/components/ColorVariantSwitcher";
-import { IntroOverlay } from "@/components/IntroOverlay";
 import { HotspotPanel } from "@/components/HotspotPanel";
 import { HotspotSidebar } from "@/components/HotspotSidebar";
 import { HotspotCalibrator } from "@/components/HotspotCalibrator";
@@ -34,10 +33,6 @@ export default async function LocaleHome() {
 
       <LanguagePicker />
       <ColorVariantSwitcher />
-      {/* First-load onboarding: instant render backdrop → language card
-       *  → interactive model. Replaced the old AttractorOverlay
-       *  (scene-cycling hero) which visually overlapped this layer. */}
-      <IntroOverlay />
       <HotspotSidebar />
       <HotspotPanel />
       <InquiryCta />

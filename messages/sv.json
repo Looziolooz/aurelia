@@ -37,7 +37,15 @@
     "tapGesture": "Tryck",
     "rotateGesture": "Rotera",
     "pinchGesture": "Zoom",
-    "ar": "Visa i AR"
+    "ar": "Visa i AR",
+    "intro": {
+      "chooseLanguage": "Välj språk",
+      "starting": "Startar",
+      "loadingGeometry": "Förbereder geometri…",
+      "loadingMaterials": "Förbereder material…",
+      "almostReady": "Nästan klar…",
+      "tapHint": "Tryck för att utforska"
+    }
   },
   "a11y": {
     "hotspotCount": "Intressepunkt {current} av {total}",

@@ -17,12 +17,8 @@ export function IdleResetProvider({
   const locale = useLocale() as Locale;
   const router = useRouter();
   const pathname = usePathname();
-  const resetToAttractor = useTotemStore((s) => s.resetToAttractor);
+  const resetIdle = useTotemStore((s) => s.resetIdle);
   const phase = useTotemStore((s) => s.phase);
-  // The lead-gen modal must hold the kiosk open: a visitor mid-form-fill can
-  // easily pause >60s (reading, typing a long company name) without firing
-  // the activity listeners often enough. Resetting here would also wipe their
-  // input and bounce the locale. While the modal is open, idle is suspended.
   const inquiryOpen = useTotemStore((s) => s.inquiryOpen);
 
   const timerRef = useRef<number | null>(null);
@@ -30,7 +26,7 @@ export function IdleResetProvider({
 
   useEffect(() => {
     const fireReset = () => {
-      resetToAttractor();
+      resetIdle();
       if (locale !== routing.defaultLocale) {
         router.replace(pathname, { locale: routing.defaultLocale });
       }
@@ -51,7 +47,11 @@ export function IdleResetProvider({
       armTimer();
     };
 
-    if (phase !== "attractor" && !inquiryOpen) armTimer();
+    // Don't arm idle while the cinematic owns the screen: the film IS
+    // the attractor, and a 60 s timeout mid-intro would just re-fire
+    // resetIdle()/bounce the locale. The timer (re)arms the moment the
+    // visitor enters "active" — this effect re-runs on every phase change.
+    if (phase !== "intro" && !inquiryOpen) armTimer();
 
     const events: (keyof DocumentEventMap)[] = [
       "pointerdown",
@@ -70,7 +70,7 @@ export function IdleResetProvider({
       }
       events.forEach((evt) => document.removeEventListener(evt, onActivity));
     };
-  }, [phase, inquiryOpen, locale, pathname, resetToAttractor, router]);
+  }, [phase, inquiryOpen, locale, pathname, resetIdle, router]);
 
   return <>{children}</>;
 }
